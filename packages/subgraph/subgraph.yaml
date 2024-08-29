@@ -1,26 +1,52 @@
 specVersion: 0.0.4
-description: Greetings
-repository: https://github.com/scaffold-eth/se-2/packages/subgraph/
 schema:
   file: ./src/schema.graphql
 dataSources:
   - kind: ethereum/contract
-    name: YourContract
+    name: Duniverse
     network: localhost
     source:
-      abi: YourContract
-      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+      abi: Duniverse
+      address: "0xc3e53F4d16Ae77Db1c982e75a937B9f60FE63690"
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.6
+      apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
-        - Greeting
-        - Sender
+        - Planet
+        - Product
+        - Seller
+        - Purchase
+        - ApprovalRequest
+        - ApprovalEvent
+        - Appeal
+        - ReleaseEvent
+        - RefundEvent
+        - SaleEvent
+        - DeliveredEvent
       abis:
-        - name: YourContract
-          file: ./abis/localhost_YourContract.json
+        - name: Duniverse
+          file: ./abis/localhost_Duniverse.json
       eventHandlers:
-        - event: GreetingChange(indexed address,string,bool,uint256)
-          handler: handleGreetingChange
+        - event: PlanetCreated(indexed uint256,string,string,indexed address)
+          handler: handlePlanetCreated
+        - event: ProductAdded(indexed uint256,indexed uint256,indexed
+            address,uint256,uint256)
+          handler: handleProductAdded
+        - event: Sale(indexed address,uint256,uint256)
+          handler: handleSale
+        - event: Refund(indexed address,indexed address,uint256,uint256)
+          handler: handleRefund
+        - event: Release(indexed address,uint256,uint256)
+          handler: handleRelease
+        - event: Delivered(indexed address,uint256,uint256)
+          handler: handleDelivered
+        - event: ApprovalRequested(indexed address,uint256)
+          handler: handleApprovalRequested
+        - event: ApprovalGranted(indexed address,uint256)
+          handler: handleApprovalGranted
+        - event: ApprovalDeclined(indexed address,uint256)
+          handler: handleApprovalDeclined
+        - event: AppealRaised(indexed uint256,indexed address)
+          handler: handleAppealRaised
       file: ./src/mapping.ts
