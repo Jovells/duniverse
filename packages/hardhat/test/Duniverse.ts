@@ -142,7 +142,10 @@ describe("Duniverse", function () {
     });
 
     it("should not allow the ruler to refund a purchase without an appeal", async () => {
-      const purchaseId = 2;
+      //make a purchase
+      await eCedi.connect(buyer2).approve(duniverseContract.target, totalAmount);
+      await duniverseContract.connect(buyer2).purchaseProduct(productId, 1);
+      const purchaseId = 3;
       const refund = duniverseContract.connect(ruler).refund(purchaseId, { gasLimit: 3e7 });
       await expect(refund).to.be.revertedWith("Appeal must be raised before refund");
     });
@@ -150,7 +153,7 @@ describe("Duniverse", function () {
     it("should not allow the ruler to refund a purchase that has already been refunded", async () => {
       const purchaseId = 2;
       const refund = duniverseContract.connect(ruler).refund(purchaseId, { gasLimit: 3e7 });
-      await expect(refund).to.be.reverted;
+      await expect(refund).to.be.revertedWith("Purchase already refunded");
     });
 
     it("should not allow the ruler to refund a purchase that has already been released", async () => {
@@ -176,7 +179,10 @@ describe("Duniverse", function () {
     });
 
     it("should not allow the ruler to release funds for a purchase without an appeal", async () => {
-      const purchaseId = 3;
+      //make a purchase
+      await eCedi.connect(buyer2).approve(duniverseContract.target, totalAmount);
+      await duniverseContract.connect(buyer2).purchaseProduct(productId, 1);
+      const purchaseId = 4;
       const release = duniverseContract.connect(ruler).releaseFor(purchaseId, { gasLimit: 3e7 });
       await expect(release).to.be.revertedWith("Appeal must be raised before release");
     });
@@ -188,9 +194,18 @@ describe("Duniverse", function () {
     });
 
     it("should not allow the ruler to release funds for a purchase that has already been released", async () => {
-      const purchaseId = 3;
-      const release = duniverseContract.releaseFor(purchaseId, { gasLimit: 3e7 });
-      await expect(release).to.be.revertedWith("Funds are already released");
+      //make a purchase
+      await eCedi.connect(buyer2).approve(duniverseContract.target, totalAmount);
+      await duniverseContract.connect(buyer2).purchaseProduct(productId, 1);
+
+      //raise appeal
+      const purchaseId = 5;
+      await duniverseContract.connect(buyer2).raiseAppeal(purchaseId);
+
+      //try to release twice
+      duniverseContract.connect(ruler).releaseFor(purchaseId);
+      const release2 = duniverseContract.connect(ruler).releaseFor(purchaseId);
+      await expect(release2).to.be.revertedWith("Funds are already released");
     });
   });
 

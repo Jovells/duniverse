@@ -229,6 +229,7 @@ contract Duniverse {
     function refund(uint256 _purchaseId) external onlyPurchaseRuler(_purchaseId) {
         require(appeals[_purchaseId], "Appeal must be raised before refund");
         require(!purchases[_purchaseId].isReleased, "Funds are already released");
+        require(!purchases[_purchaseId].isRefunded, "Purchase already refunded");
         ECedi(ECEDI_ADDRESS).transfer(purchases[_purchaseId].buyer, purchases[_purchaseId].amount);
         emit Refund(msg.sender, purchases[_purchaseId].seller, _purchaseId, purchases[_purchaseId].amount);
         purchases[_purchaseId].isRefunded = true;
