@@ -123,6 +123,21 @@ contract Duniverse {
         address indexed by
     );
 
+    event PlanetCreated(
+        uint256 indexed planetId,
+        string planetName,
+        string planetDescription,
+        address indexed ruler
+    );
+
+    event ProductAdded(
+        uint256 indexed productId,
+        uint256 indexed planetId,
+        address indexed seller,
+        uint256 quantity,
+        uint256 price
+    );
+
     constructor(address _ECEDI_ADDRESS) {
         owner = msg.sender;
         ECEDI_ADDRESS = _ECEDI_ADDRESS;
@@ -131,6 +146,7 @@ contract Duniverse {
     // Function to add a product
     function addProduct(uint256 _productId, uint256 _planetId, address _seller, uint256 _quantity, uint256 _price) public onlyApprovedSeller(_planetId) {
         products[_productId] = Product(_productId, _planetId, _seller, _quantity, _price, 0);
+        emit ProductAdded(_productId, _planetId, _seller, _quantity, _price); // Emit event when a product is added
     }
 
     // Function for sellers to request approval
@@ -156,6 +172,7 @@ contract Duniverse {
 
     function createPlanet(uint256 _planetId, string memory _planetName, string memory _planetDescription) public {
         planets[_planetId] = Planet(_planetId, _planetName, _planetDescription, msg.sender);
+        emit PlanetCreated(_planetId, _planetName, _planetDescription, msg.sender); // Emit event when a planet is created
     }
 
     function getPurchases(uint start, uint end) public view returns (Purchase[] memory) {
