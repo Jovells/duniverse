@@ -3951,7 +3951,11 @@ const deployedContracts = {
   },
   11155111: {
     Duniverse: {
+<<<<<<< HEAD
       address: "0x0167996EfE7eFB6EEC3366694e26d935829d9916",
+=======
+      address: "0x83bd7e53dE6ba627f3f01fA6A8C5d665E0A860DC",
+>>>>>>> jovells-dev
       abi: [
         {
           inputs: [

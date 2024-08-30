@@ -28,7 +28,7 @@ import {
 
 // Utility function to get the current timestamp
 function getCurrentTimestamp(): BigInt {
-  return BigInt.fromI32((Date.now() / 1000) as i32);
+  return BigInt.fromI32(Date.now() / 1000);
 }
 
 // Handle the creation of a new planet
