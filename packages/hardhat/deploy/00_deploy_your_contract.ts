@@ -6,28 +6,30 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
   const { deployer } = await hre.getNamedAccounts();
   const { deploy } = hre.deployments;
 
+  console.log("deployer:", deployer);
+
   // Get signers for different roles
   const [deployerSigner, ruler1, ruler2, seller1, seller2] = await hre.ethers.getSigners();
 
-  // Deploy ECedi contract
-  const eCediDeployment = await deploy("ECedi", {
+  // Deploy MockUSDT contract
+  const mockUSDTDeployment = await deploy("MockUSDT", {
     from: deployer,
     args: [],
     log: true,
     autoMine: true,
   });
 
-  if (!eCediDeployment.address) {
-    throw new Error("ECedi contract deployment failed, address is undefined.");
+  if (!mockUSDTDeployment.address) {
+    throw new Error("MockUSDT contract deployment failed, address is undefined.");
   }
 
-  const eCedi = new ethers.Contract(eCediDeployment.address, eCediDeployment.abi, deployerSigner);
-  console.log(`eCedi deployed to ${eCedi.target}`);
+  const mockUSDT = new ethers.Contract(mockUSDTDeployment.address, mockUSDTDeployment.abi, deployerSigner);
+  console.log(`mockUSDT deployed to ${mockUSDT.target}`);
 
-  // Deploy Duniverse contract with the ECedi contract address as the argument
+  // Deploy Duniverse contract with the MockUSDT contract address as the argument
   const duniverseDeployment = await deploy("Duniverse", {
     from: deployer,
-    args: [eCedi.target],
+    args: [mockUSDT.target],
     log: true,
     autoMine: true,
   });

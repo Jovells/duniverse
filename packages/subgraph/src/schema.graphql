@@ -9,9 +9,10 @@ type Planet @entity {
 
 type Product @entity {
   id: ID!
+  name: String!
   productId: BigInt!
   planet: Planet!
-  seller: Seller! # This field must reference the Seller entity
+  seller: Seller! 
   quantity: BigInt!
   price: BigInt!
   sales: BigInt!
