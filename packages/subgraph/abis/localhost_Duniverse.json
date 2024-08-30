@@ -129,6 +129,12 @@
       {
         "indexed": false,
         "internalType": "string",
+        "name": "planetImage",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
         "name": "planetDescription",
         "type": "string"
       },
@@ -162,6 +168,12 @@
         "internalType": "address",
         "name": "seller",
         "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "productImage",
+        "type": "string"
       },
       {
         "indexed": false,
@@ -718,11 +730,6 @@
       },
       {
         "internalType": "string",
-        "name": "planetImage",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
         "name": "planetDescription",
         "type": "string"
       },
@@ -754,11 +761,6 @@
         "internalType": "uint256",
         "name": "productId",
         "type": "uint256"
-      },
-      {
-        "internalType": "string",
-        "name": "productImage",
-        "type": "string"
       },
       {
         "internalType": "uint256",
@@ -944,11 +946,6 @@
       {
         "internalType": "string",
         "name": "planetName",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "planetImage",
         "type": "string"
       },
       {
