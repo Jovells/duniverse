@@ -1329,7 +1329,7 @@ const deployedContracts = {
   },
   31337: {
     Duniverse: {
-      address: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+      address: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
       abi: [
         {
           inputs: [
@@ -1624,6 +1624,11 @@ const deployedContracts = {
               type: "uint256",
             },
             {
+              internalType: "string",
+              name: "_productImage",
+              type: "string",
+            },
+            {
               internalType: "address",
               name: "_seller",
               type: "address",
@@ -1717,13 +1722,13 @@ const deployedContracts = {
         {
           inputs: [
             {
-              internalType: "uint256",
-              name: "_planetId",
-              type: "uint256",
+              internalType: "string",
+              name: "_planetName",
+              type: "string",
             },
             {
               internalType: "string",
-              name: "_planetName",
+              name: "_planetImage",
               type: "string",
             },
             {
@@ -1973,6 +1978,19 @@ const deployedContracts = {
         },
         {
           inputs: [],
+          name: "numPlanets",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
           name: "numProducts",
           outputs: [
             {
@@ -2032,6 +2050,11 @@ const deployedContracts = {
             },
             {
               internalType: "string",
+              name: "planetImage",
+              type: "string",
+            },
+            {
+              internalType: "string",
               name: "planetDescription",
               type: "string",
             },
@@ -2063,6 +2086,11 @@ const deployedContracts = {
               internalType: "uint256",
               name: "productId",
               type: "uint256",
+            },
+            {
+              internalType: "string",
+              name: "productImage",
+              type: "string",
             },
             {
               internalType: "uint256",
@@ -2230,11 +2258,50 @@ const deployedContracts = {
           stateMutability: "nonpayable",
           type: "function",
         },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          name: "rulerPlanets",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "planetId",
+              type: "uint256",
+            },
+            {
+              internalType: "string",
+              name: "planetName",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "planetImage",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "planetDescription",
+              type: "string",
+            },
+            {
+              internalType: "address",
+              name: "ruler",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
       ],
       inheritedFunctions: {},
     },
     MockUSDT: {
-      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      address: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
       abi: [
         {
           inputs: [],
@@ -2309,19 +2376,6 @@ const deployedContracts = {
           ],
           name: "Transfer",
           type: "event",
-        },
-        {
-          inputs: [],
-          name: "DOMAIN_SEPARATOR",
-          outputs: [
-            {
-              internalType: "bytes32",
-              name: "",
-              type: "bytes32",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
         },
         {
           inputs: [
@@ -2472,25 +2526,6 @@ const deployedContracts = {
           type: "function",
         },
         {
-          inputs: [
-            {
-              internalType: "address",
-              name: "owner",
-              type: "address",
-            },
-          ],
-          name: "nonces",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
           inputs: [],
           name: "owner",
           outputs: [
@@ -2501,49 +2536,6 @@ const deployedContracts = {
             },
           ],
           stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "owner",
-              type: "address",
-            },
-            {
-              internalType: "address",
-              name: "spender",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "value",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "deadline",
-              type: "uint256",
-            },
-            {
-              internalType: "uint8",
-              name: "v",
-              type: "uint8",
-            },
-            {
-              internalType: "bytes32",
-              name: "r",
-              type: "bytes32",
-            },
-            {
-              internalType: "bytes32",
-              name: "s",
-              type: "bytes32",
-            },
-          ],
-          name: "permit",
-          outputs: [],
-          stateMutability: "nonpayable",
           type: "function",
         },
         {
@@ -3973,7 +3965,7 @@ const deployedContracts = {
   },
   11155111: {
     Duniverse: {
-      address: "0x8750753695D7F994eF159Cc52B49f0930374D4CE",
+      address: "0x11342913a0b3814D1C39C78b3809c0b65B113eAC",
       abi: [
         {
           inputs: [
@@ -4268,6 +4260,11 @@ const deployedContracts = {
               type: "uint256",
             },
             {
+              internalType: "string",
+              name: "_productImage",
+              type: "string",
+            },
+            {
               internalType: "address",
               name: "_seller",
               type: "address",
@@ -4361,13 +4358,13 @@ const deployedContracts = {
         {
           inputs: [
             {
-              internalType: "uint256",
-              name: "_planetId",
-              type: "uint256",
+              internalType: "string",
+              name: "_planetName",
+              type: "string",
             },
             {
               internalType: "string",
-              name: "_planetName",
+              name: "_planetImage",
               type: "string",
             },
             {
@@ -4617,6 +4614,19 @@ const deployedContracts = {
         },
         {
           inputs: [],
+          name: "numPlanets",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
           name: "numProducts",
           outputs: [
             {
@@ -4676,6 +4686,11 @@ const deployedContracts = {
             },
             {
               internalType: "string",
+              name: "planetImage",
+              type: "string",
+            },
+            {
+              internalType: "string",
               name: "planetDescription",
               type: "string",
             },
@@ -4707,6 +4722,11 @@ const deployedContracts = {
               internalType: "uint256",
               name: "productId",
               type: "uint256",
+            },
+            {
+              internalType: "string",
+              name: "productImage",
+              type: "string",
             },
             {
               internalType: "uint256",
@@ -4872,6 +4892,45 @@ const deployedContracts = {
           name: "requestApproval",
           outputs: [],
           stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          name: "rulerPlanets",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "planetId",
+              type: "uint256",
+            },
+            {
+              internalType: "string",
+              name: "planetName",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "planetImage",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "planetDescription",
+              type: "string",
+            },
+            {
+              internalType: "address",
+              name: "ruler",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
           type: "function",
         },
       ],

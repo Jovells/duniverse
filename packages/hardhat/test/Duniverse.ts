@@ -33,7 +33,7 @@ describe("Duniverse", function () {
 
   describe("Planet Creation", function () {
     it("should allow the ruler to create a planet", async () => {
-      await duniverseContract.connect(ruler).createPlanet(planetId, "Earth", "A beautiful planet");
+      await duniverseContract.connect(ruler).createPlanet("Earth", "google.com/image", "A beautiful planet");
       const planet = await duniverseContract.planets(planetId);
       expect(planet.planetName).to.equal("Earth");
       expect(planet.ruler).to.equal(ruler.address);
@@ -54,13 +54,30 @@ describe("Duniverse", function () {
     });
   });
 
+  describe("Product Restrictions for Ruler", function () {
+    it("should not allow the ruler to add a product on their own planet", async () => {
+      const addProduct = duniverseContract
+        .connect(ruler)
+        .addProduct(productName, planetId, "abc@abc.com", ruler.address, 10, totalAmount);
+      await expect(addProduct).to.be.reverted;
+    });
+  });
+
   describe("Product Purchase", function () {
     it("should allow the seller to add a product", async () => {
-      await duniverseContract.connect(seller).addProduct(productName, planetId, seller.address, 10, totalAmount);
+      await duniverseContract
+        .connect(seller)
+        .addProduct(productName, planetId, "abc@abc.com", seller.address, 10, totalAmount);
       const product = await duniverseContract.products(productId);
       console.log("product", product);
       expect(product.seller).to.equal(seller.address);
       expect(product.price).to.equal(totalAmount);
+    });
+
+    it("should not allow the ruler to purchase a product from their own planet", async () => {
+      await mockUSDT.connect(ruler).approve(duniverseContract.target, totalAmount);
+      const purchase = duniverseContract.connect(ruler).purchaseProduct(productId, 1);
+      await expect(purchase).to.be.revertedWith("Rulers cannot buy from their own planet");
     });
 
     it("should allow the buyer to purchase a product", async () => {
