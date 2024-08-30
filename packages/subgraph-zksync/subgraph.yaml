@@ -30,7 +30,7 @@ dataSources:
         - DeliveredEvent
       abis:
         - name: contracts/Duniverse.sol_Duniverse
-          file: ./abis/contracts/Duniverse.sol_Duniverse.json
+          file: ../subgraph/abis/localhost_Duniverse.json
       eventHandlers:
         - event: AppealRaised(indexed uint256,indexed address)
           handler: handleAppealRaised
@@ -42,9 +42,10 @@ dataSources:
           handler: handleApprovalRequested
         - event: Delivered(indexed address,uint256,uint256)
           handler: handleDelivered
-        - event: PlanetCreated(indexed uint256,string,string,indexed address)
+        - event: PlanetCreated(indexed uint256,string,string,string,indexed address)
           handler: handlePlanetCreated
-        - event: ProductAdded(indexed uint256,indexed uint256,indexed address,string,uint256,uint256)
+        - event: ProductAdded(indexed uint256,indexed uint256,indexed
+            address,string,string,uint256,uint256)
           handler: handleProductAdded
         - event: Refund(indexed address,indexed address,uint256,uint256)
           handler: handleRefund

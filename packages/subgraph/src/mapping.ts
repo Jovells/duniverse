@@ -28,7 +28,7 @@ import {
 
 // Utility function to get the current timestamp
 function getCurrentTimestamp(): BigInt {
-  return BigInt.fromI32(Date.now() / 1000);
+  return BigInt.fromI32((Date.now() / 1000) as i32);
 }
 
 // Handle the creation of a new planet
@@ -36,6 +36,7 @@ export function handlePlanetCreated(event: PlanetCreated): void {
   let planet = new Planet(event.params.planetId.toString());
   planet.planetId = event.params.planetId;
   planet.planetName = event.params.planetName;
+  planet.planetImage = event.params.planetImage; // Added planetImage
   planet.planetDescription = event.params.planetDescription;
   planet.ruler = event.params.ruler;
   planet.createdAt = event.block.timestamp;
@@ -47,6 +48,11 @@ export function handlePlanetCreated(event: PlanetCreated): void {
 export function handleProductAdded(event: ProductAdded): void {
   let product = new Product(event.params.productId.toString());
   product.productId = event.params.productId;
+  product.productImage = event.params.productImage; // Added productImage
+  product.name = event.params.name;
+  product.quantity = event.params.quantity;
+  product.price = event.params.price;
+  product.sales = BigInt.fromI32(0);
 
   let planet = Planet.load(event.params.planetId.toString());
   if (planet) {
@@ -65,10 +71,6 @@ export function handleProductAdded(event: ProductAdded): void {
   }
   product.seller = seller.id;
 
-  product.quantity = event.params.quantity;
-  product.name = event.params.name;
-  product.price = event.params.price;
-  product.sales = BigInt.fromI32(0);
   product.createdAt = event.block.timestamp;
   product.updatedAt = event.block.timestamp;
   product.save();
@@ -76,86 +78,55 @@ export function handleProductAdded(event: ProductAdded): void {
 
 // Handle the sale of a product
 export function handleSale(event: Sale): void {
-                                                let saleEvent = new SaleEvent(
-                                                  event.transaction.hash.toHex()
-                                                );
-                                                saleEvent.purchase = event.params.purchaseId.toString();
-                                                saleEvent.totalAmount =
-                                                  event.params.totalAmount;
-                                                saleEvent.createdAt =
-                                                  event.block.timestamp;
-                                                saleEvent.updatedAt =
-                                                  event.block.timestamp;
-                                                saleEvent.save();
+  let saleEvent = new SaleEvent(event.transaction.hash.toHex());
+  saleEvent.purchase = event.params.purchaseId.toString();
+  saleEvent.totalAmount = event.params.totalAmount;
+  saleEvent.createdAt = event.block.timestamp;
+  saleEvent.updatedAt = event.block.timestamp;
+  saleEvent.save();
 
-                                                let purchase = Purchase.load(
-                                                  event.params.purchaseId.toString()
-                                                );
-                                                if (purchase == null) {
-                                                  purchase = new Purchase(
-                                                    event.params.purchaseId.toString()
-                                                  );
-                                                  purchase.purchaseId =
-                                                    event.params.purchaseId;
+  let purchase = Purchase.load(event.params.purchaseId.toString());
+  if (purchase == null) {
+    purchase = new Purchase(event.params.purchaseId.toString());
+    purchase.purchaseId = event.params.purchaseId;
 
-                                                  let product = Product.load(
-                                                    event.params.purchaseId.toString()
-                                                  );
-                                                  if (product) {
-                                                    purchase.product =
-                                                      product.id;
-                                                    purchase.seller =
-                                                      product.seller;
-                                                    product.updatedAt =
-                                                      event.block.timestamp;
-                                                    product.save();
-                                                  }
+    let product = Product.load(event.params.purchaseId.toString());
+    if (product) {
+      purchase.product = product.id;
+      purchase.seller = product.seller;
+      product.updatedAt = event.block.timestamp;
+      product.save();
+    }
 
-                                                  let buyer = Buyer.load(
-                                                    event.params.buyer.toHex()
-                                                  );
-                                                  if (!buyer) {
-                                                    buyer = new Buyer(
-                                                      event.params.buyer.toHex()
-                                                    );
-                                                    buyer.address =
-                                                      event.params.buyer;
-                                                    buyer.createdAt =
-                                                      event.block.timestamp;
-                                                    buyer.updatedAt =
-                                                      event.block.timestamp;
-                                                    buyer.save();
-                                                  }
-                                                  purchase.buyer = buyer.id;
+    let buyer = Buyer.load(event.params.buyer.toHex());
+    if (!buyer) {
+      buyer = new Buyer(event.params.buyer.toHex());
+      buyer.address = event.params.buyer;
+      buyer.createdAt = event.block.timestamp;
+      buyer.updatedAt = event.block.timestamp;
+      buyer.save();
+    }
+    purchase.buyer = buyer.id;
 
-                                                  purchase.amount =
-                                                    event.params.totalAmount;
-                                                  purchase.isReleased = false;
-                                                  purchase.isDelivered = false;
-                                                  purchase.isRefunded = false;
-                                                  purchase.appealRaised = false;
-                                                  purchase.createdAt =
-                                                    event.block.timestamp;
-                                                  purchase.updatedAt =
-                                                    event.block.timestamp;
-                                                }
+    purchase.amount = event.params.totalAmount;
+    purchase.isReleased = false;
+    purchase.isDelivered = false;
+    purchase.isRefunded = false;
+    purchase.appealRaised = false;
+    purchase.createdAt = event.block.timestamp;
+    purchase.updatedAt = event.block.timestamp;
+  }
 
-                                                let product = Product.load(
-                                                  purchase.product
-                                                );
-                                                if (product != null) {
-                                                  product.sales = product.sales.plus(
-                                                    BigInt.fromI32(1)
-                                                  );
-                                                  product.updatedAt =
-                                                    event.block.timestamp;
-                                                  product.save();
-                                                }
+  let product = Product.load(purchase.product);
+  if (product != null) {
+    product.sales = product.sales.plus(BigInt.fromI32(1));
+    product.updatedAt = event.block.timestamp;
+    product.save();
+  }
 
-                                                purchase.updatedAt =
-                                                  event.block.timestamp;
-                                                purchase.save();
-                                              }
+  purchase.updatedAt = event.block.timestamp;
+  purchase.save();
+}
 
 // Handle refund of a purchase
 export function handleRefund(event: Refund): void {

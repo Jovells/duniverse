@@ -29,24 +29,25 @@ dataSources:
         - name: Duniverse
           file: ./abis/localhost_Duniverse.json
       eventHandlers:
-        - event: PlanetCreated(indexed uint256,string,string,indexed address)
+        - event: AppealRaised(indexed uint256,indexed address)
+          handler: handleAppealRaised
+        - event: ApprovalDeclined(indexed address,uint256)
+          handler: handleApprovalDeclined
+        - event: ApprovalGranted(indexed address,uint256)
+          handler: handleApprovalGranted
+        - event: ApprovalRequested(indexed address,uint256)
+          handler: handleApprovalRequested
+        - event: Delivered(indexed address,uint256,uint256)
+          handler: handleDelivered
+        - event: PlanetCreated(indexed uint256,string,string,string,indexed address)
           handler: handlePlanetCreated
-        - event: ProductAdded(indexed uint256,indexed uint256,indexed address,string,uint256,uint256)
+        - event: ProductAdded(indexed uint256,indexed uint256,indexed
+            address,string,string,uint256,uint256)
           handler: handleProductAdded
-        - event: Sale(indexed address,uint256,uint256)
-          handler: handleSale
         - event: Refund(indexed address,indexed address,uint256,uint256)
           handler: handleRefund
         - event: Release(indexed address,uint256,uint256)
           handler: handleRelease
-        - event: Delivered(indexed address,uint256,uint256)
-          handler: handleDelivered
-        - event: ApprovalRequested(indexed address,uint256)
-          handler: handleApprovalRequested
-        - event: ApprovalGranted(indexed address,uint256)
-          handler: handleApprovalGranted
-        - event: ApprovalDeclined(indexed address,uint256)
-          handler: handleApprovalDeclined
-        - event: AppealRaised(indexed uint256,indexed address)
-          handler: handleAppealRaised
+        - event: Sale(indexed address,uint256,uint256)
+          handler: handleSale
       file: ./src/mapping.ts

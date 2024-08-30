@@ -2,6 +2,7 @@ type Planet @entity {
   id: ID!
   planetId: BigInt!
   planetName: String!
+  planetImage: String! # Added planetImage
   planetDescription: String!
   ruler: Bytes!
   products: [Product!]! @derivedFrom(field: "planet")
@@ -12,6 +13,7 @@ type Planet @entity {
 type Product @entity {
   id: ID!
   name: String!
+  productImage: String! # Added productImage
   productId: BigInt!
   planet: Planet!
   seller: Seller!
