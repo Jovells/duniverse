@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useTheme } from "next-themes";
 import { Toaster } from "react-hot-toast";
 import { WagmiProvider } from "wagmi";
+import { THE_GRAPH_URL } from "~~/app/constants";
 import { Footer } from "~~/components/Footer";
 import { Header } from "~~/components/Header";
 import { BlockieAvatar } from "~~/components/scaffold-eth";
@@ -37,7 +38,8 @@ export const queryClient = new QueryClient({
   },
 });
 
-const subgraphUri = "http://localhost:8000/subgraphs/name/scaffold-eth/your-contract";
+// const subgraphUri = "http://localhost:8000/subgraphs/name/scaffold-eth/your-contract";
+const subgraphUri = THE_GRAPH_URL;
 const apolloClient = new ApolloClient({
   uri: subgraphUri,
   cache: new InMemoryCache(),
