@@ -7,19 +7,59 @@ import ProductCard from "../_components/ProductCard";
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import { THE_GRAPH_URL } from "~~/app/constants";
 
 
 const Products: NextPage = () => {
   const { writeContractAsync, isPending } = useScaffoldWriteContract("Duniverse");
   const { address: connectedAddress } = useAccount();
 
+  const [products, setProducts] = useState([])
   const [productImage, setProductImage] = useState("");
   const [productName, setProductName] = useState("");
   const [productPrice, setProductPrice] = useState(0);
   const [productQuantity, setProductQuantity] = useState(0);
   const [planetId, setPlanetId] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false)
 
   const route = useParams();
+
+  async function fetchGraphQL(operationsDoc: any, operationName: any, variables: any) {
+    setIsLoading(true)
+    const response = await fetch(THE_GRAPH_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        query: operationsDoc,
+        variables,
+        operationName,
+      }),
+    });
+    setIsLoading(false)
+  
+    return await response.json();
+  }
+  
+  const operation = `
+    query MyQuery {
+      products(where: { planet: "${route?.id}" }) {
+        id
+        name
+        price
+        productId
+        quantity
+        seller {
+          id
+        }
+      }
+    }
+  `;
+  
+  function fetchMyQuery() {
+    return fetchGraphQL(operation, 'MyQuery', {});
+  }
 
   const submitProduct = async(event: any) => {
     event?.preventDefault();
@@ -56,11 +96,26 @@ const Products: NextPage = () => {
 
   // check the planet and product id
   useEffect(() => {
-    if (route?.planetId) {
-      setPlanetId(route.planetId);
+    if (route?.id) {
+      setPlanetId(route.id || 1);
     }
-  }, [route.planetId]);
+  }, [route.id]);
 
+  // Graphql query to fetch products per planet id
+  useEffect(() => {
+    fetchMyQuery()
+    .then(({ data, errors }) => {
+      if (errors) {
+        console.error(errors);
+      } else {
+        setProducts(data.products)
+        console.log(data?.products);
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching query:', error);
+    });
+  }, [])
 
 
   return (
@@ -76,7 +131,16 @@ const Products: NextPage = () => {
               </label>
             </div>
           </div>
-          <ProductCard />
+          <div className="flex justify-center items-center gap-5">
+            {isLoading ? (
+                <span className="loading loading-spinner loading-sm"></span>
+              ) : products?.length ? (
+                products?.map((product: any, index: number) => <ProductCard key={index} product={product} />)
+              ) : (
+                <h2>No Products available</h2>
+              )
+            }
+          </div>
         </div>
 
         {/* Put this part before </body> tag */}

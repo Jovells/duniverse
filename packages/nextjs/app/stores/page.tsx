@@ -1,39 +1,64 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { THE_GRAPH_URL } from "../constants";
 import StoreCard from "./_components/StoreCard";
 import type { NextPage } from "next";
-import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
+// import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
 const Stores: NextPage = () => {
   // const { data, isLoading } = useScaffoldReadContract({
   //   contractName: "Duniverse",
   //   functionName: "",
   // });
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [stores, setStores] = useState<any[]>([]);
 
-  const [stores] = useState<any[]>([
-    {
-      name: "Absa Bank",
-      rating: 5,
-      img: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/ABSA_Group_Limited_Logo.svg/800px-ABSA_Group_Limited_Logo.svg.png",
-    },
-    {
-      name: "Despite Group",
-      rating: 3,
-      img: "https://play-lh.googleusercontent.com/x2ILS6dHlRL6kmmV3IL0Sj5frCB65iteZKTOQZyGrSs2wKmh52rLddV_z2Kx4HHqQ24",
-    },
-    {
-      name: "KodeTech Gh Ltd.",
-      rating: 2,
-      img: "https://kodetechgh.com/images/logo-blue.png",
-    },
-    {
-      name: "Zoom Lion Co. Ltd",
-      rating: 5,
-      img: "https://zoomlionghana.com/wp-content/uploads/2023/08/cropped-zl_logo-01.png",
-    },
-  ]);
+  async function fetchGraphQL(operationsDoc: any, operationName: any, variables: any) {
+    setIsLoading(true);
+    const response = await fetch(THE_GRAPH_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        query: operationsDoc,
+        variables,
+        operationName,
+      }),
+    });
+    setIsLoading(false);
+    return await response.json();
+  }
+
+  const operation = `
+    query MyQuery {
+      planets(first: 10, orderBy: id) {
+        planetDescription
+        planetId
+        planetName
+      }
+    }
+  `;
+
+  async function fetchMyQuery() {
+    const { data, errors } = await fetchGraphQL(operation, "MyQuery", {});
+
+    if (errors) {
+      console.error(errors);
+      return;
+    }
+
+    console.log(data?.planets);
+    setStores(data?.planets);
+  }
+
+  useEffect(() => {
+    fetchMyQuery().catch(error => {
+      console.error("Error fetching query:", error);
+    });
+  }, []);
 
   return (
     <>
@@ -41,9 +66,13 @@ const Stores: NextPage = () => {
         <div className="flex-grow flex-col bg-base-300 w-full px-8 py-12 items-center justify-center gap-10">
           <h1 className="text-[30px]">Stores</h1>
           <div className="flex flex-wrap justify-center items-center gap-5">
-            {stores.map((store: any, index: number) => (
-              <StoreCard key={index} store={store} />
-            ))}
+            {isLoading ? (
+              <span className="loading loading-spinner loading-sm"></span>
+            ) : stores?.length ? (
+              stores?.map((store: any, index: number) => <StoreCard key={index} planet={store} />)
+            ) : (
+              <h2>No Stores available</h2>
+            )}
           </div>
         </div>
       </div>
