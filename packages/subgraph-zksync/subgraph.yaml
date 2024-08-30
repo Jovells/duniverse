@@ -1,0 +1,53 @@
+specVersion: 1.0.0
+indexerHints:
+  prune: auto
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: contracts/Duniverse.sol:Duniverse
+    network: zksync-era-sepolia
+    source:
+      address: "0x0A788c9cf7B6162d117E07C022dAce327df6a238"
+      abi: contracts/Duniverse.sol:Duniverse
+      startBlock: 3706942
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - AppealRaised
+        - ApprovalDeclined
+        - ApprovalGranted
+        - ApprovalRequested
+        - Delivered
+        - PlanetCreated
+        - ProductAdded
+        - Refund
+        - Release
+        - Sale
+      abis:
+        - name: contracts/Duniverse.sol:Duniverse
+          file: ./abis/contracts/Duniverse.sol:Duniverse.json
+      eventHandlers:
+        - event: AppealRaised(indexed uint256,indexed address)
+          handler: handleAppealRaised
+        - event: ApprovalDeclined(indexed address,uint256)
+          handler: handleApprovalDeclined
+        - event: ApprovalGranted(indexed address,uint256)
+          handler: handleApprovalGranted
+        - event: ApprovalRequested(indexed address,uint256)
+          handler: handleApprovalRequested
+        - event: Delivered(indexed address,uint256,uint256)
+          handler: handleDelivered
+        - event: PlanetCreated(indexed uint256,string,string,indexed address)
+          handler: handlePlanetCreated
+        - event: ProductAdded(indexed uint256,indexed uint256,indexed address,string,uint256,uint256)
+          handler: handleProductAdded
+        - event: Refund(indexed address,indexed address,uint256,uint256)
+          handler: handleRefund
+        - event: Release(indexed address,uint256,uint256)
+          handler: handleRelease
+        - event: Sale(indexed address,uint256,uint256)
+          handler: handleSale
+      file: ./src/contracts-duniverse-sol-duniverse.ts
