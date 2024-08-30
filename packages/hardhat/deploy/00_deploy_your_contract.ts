@@ -1,8 +1,7 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
 import { ethers } from "hardhat";
-import { Wallet } from "zksync-web3";
-// import { Deployer } from "@matterlabs/hardhat-zksync-deploy";
+// import { Wallet } from "zksync-web3";
 
 const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployer } = await hre.getNamedAccounts();
@@ -31,37 +30,12 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
     }
   }
 
-  // Check and send ETH to ruler1, ruler2, seller1, and seller2
-  await checkAndSendEth(ruler1.address, ruler1, "Ruler 1");
-  await checkAndSendEth(ruler2.address, ruler2, "Ruler 2");
-  await checkAndSendEth(seller1.address, seller1, "Seller 1");
-  await checkAndSendEth(seller2.address, seller2, "Seller 2");
-
-  try {
+  // Function to deploy contracts
+  async function deployContracts() {
     let mockUSDT, duniverse;
 
     if (isZkSync) {
       console.log("zksync deployment not working here. use Atlas");
-      {
-        /**     // zkSync deployment
-    console.log(`Running deploy script for the zkSync network`);
-
-    // Initialize the wallet.
-    const wallet = new Wallet(process.env.DEPLOYER_PRIVATE_KEY || "");
-
-    // Create deployer object and load the artifact of the contract you want to deploy.
-    const deployer = new Deployer(hre, wallet);
-
-    // Deploy MockUSDT
-    const mockUSDTArtifact = await deployer.loadArtifact("MockUSDT");
-    mockUSDT = await deployer.deploy(mockUSDTArtifact, []);
-    console.log(`MockUSDT deployed to ${await mockUSDT.getAddress()}`);
-
-    // Deploy Duniverse
-    const duniverseArtifact = await deployer.loadArtifact("Duniverse");
-    duniverse = await deployer.deploy(duniverseArtifact, [await mockUSDT.getAddress()]);
-    console.log(`Duniverse deployed to ${await duniverse.getAddress()}`); **/
-      }
     } else {
       // Regular deployment
       console.log("Deploying MockUSDT...");
@@ -77,7 +51,6 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
       }
 
       console.log(`MockUSDT deployed to ${mockUSDTDeployment.address}`);
-
       mockUSDT = await ethers.getContractAt("MockUSDT", mockUSDTDeployment.address);
 
       console.log("Deploying Duniverse...");
@@ -93,65 +66,87 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
       }
 
       console.log(`Duniverse deployed to ${duniverseDeployment.address}`);
-
       duniverse = await ethers.getContractAt("Duniverse", duniverseDeployment.address);
     }
 
-    if (!duniverse) {
-      return;
-    }
+    return { mockUSDT, duniverse };
+  }
 
-    // Create 2 planets with different rulers
+  // Function to create planets
+  async function createPlanets(duniverse: any) {
     console.log("Creating planet 1 Pearson Consultants...");
     const tx1 = await duniverse.connect(ruler1).createPlanet("Pearson Consultants", "image.com", "The first planet");
     await tx1.wait();
+
     console.log("Creating planet 2 D-Bank...");
     const tx2 = await duniverse.connect(ruler2).createPlanet("D-Bank", "image.com", "The second planet");
     await tx2.wait();
+  }
 
-    // Request approval for sellers on both planets
+  // Function to request and approve sellers
+  async function requestAndApproveSellers(duniverse: any) {
     console.log("requesting approval for seller1...");
     const requestApprovalTx1 = await duniverse.connect(seller1).requestApproval(1);
     await requestApprovalTx1.wait();
+
     console.log("requesting approval for seller2...");
     const requestApprovalTx2 = await duniverse.connect(seller2).requestApproval(2);
     await requestApprovalTx2.wait();
 
-    // Approve sellers for both planets
     console.log("approving seller1...");
     const approvalTx1 = await duniverse.connect(ruler1).approveSeller(seller1.address);
     await approvalTx1.wait();
+
     console.log("approving seller2...");
     const approvalTx2 = await duniverse.connect(ruler2).approveSeller(seller2.address);
     await approvalTx2.wait();
+  }
 
-    // Add 5 products to each planet
+  // Function to add products to planets
+  async function addProducts(duniverse: any) {
     console.log("Adding products to planet 1...");
-    for (let i = 1; i <= 2; i++) {
-      const products = ["iPhone 16", "Samsung Galaxy", "Tesla Model 3", "Rolex Watch", "Yacht"];
-
+    const products1 = ["iPhone 16", "Samsung Galaxy", "Tesla Model 3", "Rolex Watch", "Yacht"];
+    for (let i = 0; i < products1.length; i++) {
       const addProductTx = await duniverse
         .connect(seller1)
-        .addProduct(products[i], 1, "iphone.com", seller1.address, 100, ethers.parseUnits("10", 6));
+        .addProduct(products1[i], 1, "iphone.com", seller1.address, 100, ethers.parseUnits("10", 6));
       await addProductTx.wait();
-      console.log(`Product ${i} added to planet 1`);
-    }
-    console.log("Adding products to planet 2...");
-    for (let i = 1; i <= 3; i++) {
-      const products = [
-        "chamber and hall",
-        "6 bedroom mansion",
-        "5 bedroom house",
-        "4 bedroom house",
-        "3 bedroom house",
-      ];
-      const addProductTx = await duniverse
-        .connect(seller2)
-        .addProduct(products[i], 2, "iphone.com", seller2.address, 100, ethers.parseUnits("100", 6));
-      await addProductTx.wait();
+      console.log(`Product ${i + 1} added to planet 1`);
     }
 
-    console.log(`2 Planets created and 5 products added to each planet.`);
+    console.log("Adding products to planet 2...");
+    const products2 = [
+      "chamber and hall",
+      "6 bedroom mansion",
+      "5 bedroom house",
+      "4 bedroom house",
+      "3 bedroom house",
+    ];
+    for (let i = 0; i < products2.length; i++) {
+      const addProductTx = await duniverse
+        .connect(seller2)
+        .addProduct(products2[i], 2, "iphone.com", seller2.address, 100, ethers.parseUnits("100", 6));
+      await addProductTx.wait();
+      console.log(`Product ${i + 1} added to planet 2`);
+    }
+  }
+
+  // Main deployment logic
+  try {
+    // Check and send ETH to ruler1, ruler2, seller1, and seller2
+    // await checkAndSendEth(ruler1.address, ruler1, "Ruler 1");
+    // await checkAndSendEth(ruler2.address, ruler2, "Ruler 2");
+    // await checkAndSendEth(seller1.address, seller1, "Seller 1");
+    // await checkAndSendEth(seller2.address, seller2, "Seller 2");
+
+    const { duniverse } = await deployContracts();
+    if (!duniverse) return;
+
+    // await createPlanets(duniverse);
+    // await requestAndApproveSellers(duniverse);
+    // await addProducts(duniverse);
+
+    console.log(`2 Planets created and products added to each planet.`);
   } catch (error) {
     console.error("Deployment failed:", error);
     throw error;
