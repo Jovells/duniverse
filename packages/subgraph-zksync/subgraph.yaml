@@ -5,11 +5,11 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum
-    name: contracts/Duniverse.sol:Duniverse
+    name: contracts/Duniverse.sol_Duniverse
     network: zksync-era-sepolia
     source:
       address: "0x0A788c9cf7B6162d117E07C022dAce327df6a238"
-      abi: contracts/Duniverse.sol:Duniverse
+      abi: contracts/Duniverse.sol_Duniverse
       startBlock: 3706942
     mapping:
       kind: ethereum/events
@@ -27,8 +27,8 @@ dataSources:
         - Release
         - Sale
       abis:
-        - name: contracts/Duniverse.sol:Duniverse
-          file: ./abis/contracts/Duniverse.sol:Duniverse.json
+        - name: contracts/Duniverse.sol_Duniverse
+          file: ./abis/contracts/Duniverse.sol_Duniverse.json
       eventHandlers:
         - event: AppealRaised(indexed uint256,indexed address)
           handler: handleAppealRaised
