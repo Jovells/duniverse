@@ -2,12 +2,12 @@ specVersion: 0.0.4
 schema:
   file: ./src/schema.graphql
 dataSources:
-  - kind: ethereum/contract
+  - kind: ethereum
     name: Duniverse
-    network: localhost
+    network: sepolia
     source:
       abi: Duniverse
-      address: "0xa82fF9aFd8f496c3d6ac40E2a0F282E47488CFc9"
+      address: "0xE7c86A836560f49f07F00674fF3c834aac3584D2"
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
