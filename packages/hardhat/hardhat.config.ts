@@ -57,6 +57,11 @@ const config: HardhatUserConfig = {
       url: `https://eth-mainnet.alchemyapi.io/v2/${providerApiKey}`,
       accounts: [deployerPrivateKey, ...testAccounts],
     },
+    "lisk-sepolia": {
+      url: "https://rpc.sepolia-api.lisk.com",
+      accounts: [deployerPrivateKey, ...testAccounts],
+      gasPrice: 1000000000,
+    },
     sepolia: {
       url: `https://eth-sepolia.g.alchemy.com/v2/${providerApiKey}`,
       accounts: [deployerPrivateKey, ...testAccounts],
@@ -121,6 +126,15 @@ const config: HardhatUserConfig = {
       url: "https://rpc.publicgoods.network",
       accounts: [deployerPrivateKey, ...testAccounts],
     },
+    zkSync: {
+      url: "https://rpc.zksync.io",
+      accounts: [deployerPrivateKey, ...testAccounts],
+    },
+    zkSyncSepolia: {
+      url: "https://sepolia.era.zksync.dev", // The testnet RPC URL of ZKsync Era network.
+      zksync: true,
+      accounts: [deployerPrivateKey, ...testAccounts],
+    },
     pgnTestnet: {
       url: "https://sepolia.publicgoods.network",
       accounts: [deployerPrivateKey, ...testAccounts],
@@ -129,6 +143,16 @@ const config: HardhatUserConfig = {
   // configuration for harhdat-verify plugin
   etherscan: {
     apiKey: `${etherscanApiKey}`,
+    customChains: [
+      {
+        network: "lisk-sepolia",
+        chainId: 4202,
+        urls: {
+          apiURL: "https://sepolia-blockscout.lisk.com/api",
+          browserURL: "https://sepolia-blockscout.lisk.com",
+        },
+      },
+    ],
   },
   // configuration for etherscan-verify from hardhat-deploy plugin
   verify: {

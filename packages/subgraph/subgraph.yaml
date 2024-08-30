@@ -7,7 +7,7 @@ dataSources:
     network: sepolia
     source:
       abi: Duniverse
-      address: "0xE7c86A836560f49f07F00674fF3c834aac3584D2"
+      address: "0x8750753695D7F994eF159Cc52B49f0930374D4CE"
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7

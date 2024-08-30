@@ -26,6 +26,8 @@
   "devDependencies": {
     "@ethersproject/abi": "~5.7.0",
     "@ethersproject/providers": "~5.7.1",
+    "@matterlabs/hardhat-zksync-deploy": "^1.5.0",
+    "@matterlabs/hardhat-zksync-solc": "^1.2.3",
     "@nomicfoundation/hardhat-chai-matchers": "~2.0.3",
     "@nomicfoundation/hardhat-ethers": "~3.0.5",
     "@nomicfoundation/hardhat-network-helpers": "~1.0.6",
@@ -51,6 +53,7 @@
     "solidity-coverage": "~0.8.5",
     "ts-node": "~10.9.1",
     "typechain": "~8.1.0",
-    "typescript": "~5.1.6"
+    "typescript": "~5.1.6",
+    "zksync-web3": "^0.17.1"
   }
 }

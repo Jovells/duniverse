@@ -1,1 +1,1 @@
-export const THE_GRAPH_URL = "https://api.studio.thegraph.com/query/74011/duniverse/v1";
+export const THE_GRAPH_URL = "https://api.studio.thegraph.com/query/74011/duniverse/latest";
