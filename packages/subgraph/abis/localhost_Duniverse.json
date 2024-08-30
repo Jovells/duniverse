@@ -166,7 +166,7 @@
       {
         "indexed": false,
         "internalType": "string",
-        "name": "productName",
+        "name": "name",
         "type": "string"
       },
       {
@@ -292,6 +292,11 @@
         "type": "uint256"
       },
       {
+        "internalType": "string",
+        "name": "_productImage",
+        "type": "string"
+      },
+      {
         "internalType": "address",
         "name": "_seller",
         "type": "address"
@@ -385,13 +390,13 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "_planetId",
-        "type": "uint256"
+        "internalType": "string",
+        "name": "_planetName",
+        "type": "string"
       },
       {
         "internalType": "string",
-        "name": "_planetName",
+        "name": "_planetImage",
         "type": "string"
       },
       {
@@ -641,6 +646,19 @@
   },
   {
     "inputs": [],
+    "name": "numPlanets",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "numProducts",
     "outputs": [
       {
@@ -700,6 +718,11 @@
       },
       {
         "internalType": "string",
+        "name": "planetImage",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
         "name": "planetDescription",
         "type": "string"
       },
@@ -731,6 +754,11 @@
         "internalType": "uint256",
         "name": "productId",
         "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "productImage",
+        "type": "string"
       },
       {
         "internalType": "uint256",
@@ -896,6 +924,45 @@
     "name": "requestApproval",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "rulerPlanets",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "planetId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "planetName",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "planetImage",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "planetDescription",
+        "type": "string"
+      },
+      {
+        "internalType": "address",
+        "name": "ruler",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   }
 ]

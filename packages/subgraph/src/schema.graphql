@@ -5,6 +5,8 @@ type Planet @entity {
   planetDescription: String!
   ruler: Bytes!
   products: [Product!]! @derivedFrom(field: "planet")
+  createdAt: BigInt!
+  updatedAt: BigInt!
 }
 
 type Product @entity {
@@ -12,72 +14,105 @@ type Product @entity {
   name: String!
   productId: BigInt!
   planet: Planet!
-  seller: Seller! 
+  seller: Seller!
   quantity: BigInt!
   price: BigInt!
   sales: BigInt!
   purchases: [Purchase!]! @derivedFrom(field: "product")
+  createdAt: BigInt!
+  updatedAt: BigInt!
 }
 
 type Seller @entity {
   id: ID!
   address: Bytes!
-  products: [Product!]! @derivedFrom(field: "seller") # This should be correct now
-  approvals: [ApprovalRequest!]! @derivedFrom(field: "seller") # This should also be correct
+  products: [Product!]! @derivedFrom(field: "seller")
+  approvals: [ApprovalRequest!]! @derivedFrom(field: "seller")
+  appeals: [Appeal!]! @derivedFrom(field: "seller")
+  createdAt: BigInt!
+  updatedAt: BigInt!
+}
+
+type Buyer @entity {
+  id: ID!
+  address: Bytes!
+  purchases: [Purchase!]! @derivedFrom(field: "buyer")
+  appeals: [Appeal!]! @derivedFrom(field: "buyer")
+  createdAt: BigInt!
+  updatedAt: BigInt!
 }
 
 type Purchase @entity {
   id: ID!
   purchaseId: BigInt!
   product: Product!
-  buyer: Bytes!
-  seller: Seller! # Ensure this references the Seller entity correctly
+  buyer: Buyer!
+  seller: Seller!
   amount: BigInt!
   isReleased: Boolean!
   isDelivered: Boolean!
   isRefunded: Boolean!
   appealRaised: Boolean!
+  createdAt: BigInt!
+  updatedAt: BigInt!
 }
 
 type ApprovalRequest @entity {
   id: ID!
-  seller: Seller! # Ensure this references the Seller entity correctly
+  seller: Seller!
   planet: Planet!
+  status: String!
+  createdAt: BigInt!
+  updatedAt: BigInt!
 }
 
 type ApprovalEvent @entity {
   id: ID!
   eventType: String!
-  seller: Seller! # Ensure this references the Seller entity correctly
+  seller: Seller!
   planet: Planet!
+  createdAt: BigInt!
+  updatedAt: BigInt!
 }
 
 type Appeal @entity {
   id: ID!
   purchase: Purchase!
   by: Bytes!
+  buyer: Buyer
+  seller: Seller
+  createdAt: BigInt!
+  updatedAt: BigInt!
 }
 
 type ReleaseEvent @entity {
   id: ID!
   purchase: Purchase!
   amount: BigInt!
+  createdAt: BigInt!
+  updatedAt: BigInt!
 }
 
 type RefundEvent @entity {
   id: ID!
   purchase: Purchase!
   amount: BigInt!
+  createdAt: BigInt!
+  updatedAt: BigInt!
 }
 
 type SaleEvent @entity {
   id: ID!
   purchase: Purchase!
   totalAmount: BigInt!
+  createdAt: BigInt!
+  updatedAt: BigInt!
 }
 
 type DeliveredEvent @entity {
   id: ID!
   purchase: Purchase!
   totalAmount: BigInt!
+  createdAt: BigInt!
+  updatedAt: BigInt!
 }

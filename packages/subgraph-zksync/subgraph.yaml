@@ -2,13 +2,13 @@ specVersion: 1.0.0
 indexerHints:
   prune: auto
 schema:
-  file: ./schema.graphql
+  file: ./../subgraph/src/schema.graphql
 dataSources:
   - kind: ethereum
     name: contracts/Duniverse.sol_Duniverse
     network: zksync-era-sepolia
     source:
-      address: "0x0A788c9cf7B6162d117E07C022dAce327df6a238"
+      address: "0x0167996EfE7eFB6EEC3366694e26d935829d9916"
       abi: contracts/Duniverse.sol_Duniverse
       startBlock: 3706942
     mapping:
@@ -16,16 +16,18 @@ dataSources:
       apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
-        - AppealRaised
-        - ApprovalDeclined
-        - ApprovalGranted
-        - ApprovalRequested
-        - Delivered
-        - PlanetCreated
-        - ProductAdded
-        - Refund
-        - Release
-        - Sale
+        - Planet
+        - Product
+        - Seller
+        - Buyer
+        - Purchase
+        - ApprovalRequest
+        - ApprovalEvent
+        - Appeal
+        - ReleaseEvent
+        - RefundEvent
+        - SaleEvent
+        - DeliveredEvent
       abis:
         - name: contracts/Duniverse.sol_Duniverse
           file: ./abis/contracts/Duniverse.sol_Duniverse.json
@@ -50,4 +52,4 @@ dataSources:
           handler: handleRelease
         - event: Sale(indexed address,uint256,uint256)
           handler: handleSale
-      file: ./src/contracts-duniverse-sol-duniverse.ts
+      file: ../subgraph/src/mapping.ts

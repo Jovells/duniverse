@@ -14,9 +14,11 @@ contract Duniverse {
     mapping(address => uint) public approvedSellers;
     mapping(address => uint256) public approvalRequests;
     mapping(uint256 => bool) public appeals; // New mapping for appeals
+    mapping(address => Planet) public rulerPlanets;
 
     uint256 public numPurchases;
     uint256 public numProducts;
+    uint256 public numPlanets;
 
     struct Planet {
         uint256 planetId;
@@ -128,6 +130,7 @@ contract Duniverse {
     event PlanetCreated(
         uint256 indexed planetId,
         string planetName,
+        string planetImage,
         string planetDescription,
         address indexed ruler
     );
@@ -136,6 +139,7 @@ contract Duniverse {
         uint256 indexed productId,
         uint256 indexed planetId,
         address indexed seller,
+        string productImage,
         string name,
         uint256 quantity,
         uint256 price
@@ -147,10 +151,11 @@ contract Duniverse {
     }
 
     // Function to add a product
-    function addProduct(string memory _productName, uint256 _planetId, address _seller, uint256 _quantity, uint256 _price) public onlyApprovedSeller(_planetId) {
-        uint256 _productId = ++numProducts;
+    function addProduct(string memory _productName, uint256 _planetId, string memory _productImage, address _seller, uint256 _quantity, uint256 _price) public onlyApprovedSeller(_planetId) {
+        uint256 _productId = ++numProducts;       // Check if the seller is the ruler of the planet
+        require(_seller != planets[_planetId].ruler, "Rulers cannot create products on their own planet");
         products[_productId] = Product(_productName, _productId, _planetId, _seller, _quantity, _price, 0);
-        emit ProductAdded(_productId, _planetId, _seller,_productName, _quantity, _price); // Emit event when a product is added
+        emit ProductAdded(_productId, _planetId, _seller, _productImage, _productName, _quantity, _price); // Emit event when a product is added
     }
 
     // Function for sellers to request approval
@@ -174,9 +179,11 @@ contract Duniverse {
         emit ApprovalDeclined(_seller, planetId);
     }
 
-    function createPlanet(uint256 _planetId, string memory _planetName, string memory _planetDescription) public {
+    function createPlanet(string memory _planetName, string memory _planetImage, string memory _planetDescription) public {
+        require(rulerPlanets[msg.sender].planetId == 0, "Only one planet is allowed per ruler");
+        uint256 _planetId = ++numPlanets;
         planets[_planetId] = Planet(_planetId, _planetName, _planetDescription, msg.sender);
-        emit PlanetCreated(_planetId, _planetName, _planetDescription, msg.sender); // Emit event when a planet is created
+        emit PlanetCreated(_planetId, _planetName, _planetImage, _planetDescription, msg.sender); // Emit event when a planet is created
     }
 
     function getPurchases(uint start, uint end) public view returns (Purchase[] memory) {
@@ -219,17 +226,24 @@ contract Duniverse {
         return _purchases;
     }
 
-    function purchaseProduct(uint256 _productId, uint256 _quantity) public payable {
-        require(products[_productId].quantity >= _quantity, "Insufficient inventory or product does not exist");
-        uint256 totalPrice = products[_productId].price * _quantity;
-        MockUSDT(MOCKUSDT_ADDRESS).transferFrom(msg.sender, address(this), totalPrice);
-        numPurchases++;
-        emit Sale(msg.sender, numPurchases, totalPrice);
-        products[_productId].quantity -= _quantity;
-        products[_productId].sales += _quantity;
-        purchases[numPurchases] = Purchase(numPurchases, _productId, msg.sender, products[_productId].seller, totalPrice, false, false, false);
-        emit Sale(msg.sender, numPurchases, _quantity);
-    }
+  function purchaseProduct(uint256 _productId, uint256 _quantity) public payable {
+    require(products[_productId].quantity >= _quantity, "Insufficient inventory or product does not exist");
+    
+    // Get the planetId associated with the product
+    uint256 planetId = products[_productId].planetId;
+    
+    // Check if the buyer is the ruler of the planet
+    require(msg.sender != planets[planetId].ruler, "Rulers cannot buy from their own planet");
+
+    uint256 totalPrice = products[_productId].price * _quantity;
+    MockUSDT(MOCKUSDT_ADDRESS).transferFrom(msg.sender, address(this), totalPrice);
+    numPurchases++;
+    emit Sale(msg.sender, numPurchases, totalPrice);
+    products[_productId].quantity -= _quantity;
+    products[_productId].sales += _quantity;
+    purchases[numPurchases] = Purchase(numPurchases, _productId, msg.sender, products[_productId].seller, totalPrice, false, false, false);
+    emit Sale(msg.sender, numPurchases, _quantity);
+}
 
     // Function to issue a refund
     function release(uint256 _purchaseId) external onlyBuyer(_purchaseId) {

@@ -4,10 +4,10 @@ schema:
 dataSources:
   - kind: ethereum
     name: Duniverse
-    network: zksync-era-sepolia
+    network: sepolia
     source:
       abi: Duniverse
-      address: "0x0A788c9cf7B6162d117E07C022dAce327df6a238"
+      address: "0x83bd7e53dE6ba627f3f01fA6A8C5d665E0A860DC"
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -16,6 +16,7 @@ dataSources:
         - Planet
         - Product
         - Seller
+        - Buyer
         - Purchase
         - ApprovalRequest
         - ApprovalEvent
@@ -30,8 +31,7 @@ dataSources:
       eventHandlers:
         - event: PlanetCreated(indexed uint256,string,string,indexed address)
           handler: handlePlanetCreated
-        - event: ProductAdded(indexed uint256,indexed uint256,indexed
-            address,string,uint256,uint256)
+        - event: ProductAdded(indexed uint256,indexed uint256,indexed address,string,uint256,uint256)
           handler: handleProductAdded
         - event: Sale(indexed address,uint256,uint256)
           handler: handleSale
