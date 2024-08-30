@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAccount } from "wagmi";
 import { Bars3Icon } from "@heroicons/react/24/outline";
 import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useOutsideClick } from "~~/hooks/scaffold-eth";
@@ -14,6 +15,8 @@ type HeaderMenuLink = {
   icon?: React.ReactNode;
 };
 
+let isSeller = false;
+
 export const menuLinks: HeaderMenuLink[] = [
   {
     label: "Stores",
@@ -22,6 +25,11 @@ export const menuLinks: HeaderMenuLink[] = [
   {
     label: "Products",
     href: "/products",
+    // icon: <BugAntIcon className="h-4 w-4" />,
+  },
+  {
+    label: "Dashboard",
+    href: isSeller ? "/seller-dashboard" : "buyer-dashboard",
     // icon: <BugAntIcon className="h-4 w-4" />,
   },
 ];
@@ -37,7 +45,7 @@ export const HeaderMenuLinks = () => {
           <li key={href}>
             <Link
               href={href}
-              passHref
+              
               className={`${
                 isActive ? "bg-secondary shadow-md" : ""
               } hover:bg-secondary hover:shadow-md focus:!bg-secondary active:!text-neutral py-1.5 px-3 text-sm rounded-full gap-2 grid grid-flow-col outline outline-1`}
@@ -58,10 +66,55 @@ export const HeaderMenuLinks = () => {
 export const Header = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const burgerMenuRef = useRef<HTMLDivElement>(null);
+
   useOutsideClick(
     burgerMenuRef,
     useCallback(() => setIsDrawerOpen(false), []),
   );
+
+  // Graphql queries
+  async function fetchGraphQL(operationsDoc: any, operationName: any, variables: any) {
+    const response = await fetch("/api/graphql", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        query: operationsDoc,
+        variables,
+        operationName,
+      }),
+    });
+
+    return await response.json();
+  }
+
+  const operation = `
+      query MyQuery {
+        sellers(where: { id: ${useAccount().address} }) {
+          id
+        }
+      }
+    `;
+
+  function fetchMyQuery() {
+    return fetchGraphQL(operation, "MyQuery", {});
+  }
+  useEffect(() => {
+    // const { address: connectedAddress } = useAccount();
+    fetchMyQuery()
+      .then(({ data, errors }) => {
+        if (errors) {
+          console.error(errors);
+        } else {
+          console.log(data);
+          data?.length ? (isSeller = true) : (isSeller = false);
+        }
+      })
+      .catch(error => {
+        console.error("Error fetching query:", error);
+      });
+  }, []);
 
   return (
     <div className="sticky lg:static top-0 navbar bg-base-100 min-h-0 flex-shrink-0 justify-between z-20 shadow-md shadow-secondary px-0 sm:px-2">

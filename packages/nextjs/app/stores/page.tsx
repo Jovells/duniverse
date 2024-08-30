@@ -64,14 +64,14 @@ const Stores: NextPage = () => {
     <>
       <div className="flex items-center flex-col flex-grow">
         <div className="flex-grow flex-col bg-base-300 w-full px-8 py-12 items-center justify-center gap-10">
-          <h1 className="text-[30px]">Stores</h1>
+          <h1 className="text-[30px]">Planets</h1>
           <div className="flex flex-wrap justify-center items-center gap-5">
             {isLoading ? (
               <span className="loading loading-spinner loading-sm"></span>
             ) : stores?.length ? (
               stores?.map((store: any, index: number) => <StoreCard key={index} planet={store} />)
             ) : (
-              <h2>No Stores available</h2>
+              <h2>No Planets available</h2>
             )}
           </div>
         </div>

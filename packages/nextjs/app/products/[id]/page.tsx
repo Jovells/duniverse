@@ -8,6 +8,7 @@ import type { NextPage } from "next";
 import { useAccount } from "wagmi";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { THE_GRAPH_URL } from "~~/app/constants";
+import AddProduct from "../_components/AddProduct";
 
 
 const Products: NextPage = () => {
@@ -61,8 +62,7 @@ const Products: NextPage = () => {
     return fetchGraphQL(operation, 'MyQuery', {});
   }
 
-  const submitProduct = async(event: any) => {
-    event?.preventDefault();
+  async function submitProduct() {
     const payload = {
       productImage: productImage,
       productName: productName,
@@ -88,7 +88,7 @@ const Products: NextPage = () => {
     } catch (e) {
       console.error("Error posting product", e);
     }
-  };
+  }
 
   const isFormComplete = () => {
     return productName && productPrice && productQuantity && planetId
@@ -131,7 +131,7 @@ const Products: NextPage = () => {
               </label>
             </div>
           </div>
-          <div className="flex justify-center items-center gap-5">
+          <div className="flex flex-wrap justify-center items-center gap-5">
             {isLoading ? (
                 <span className="loading loading-spinner loading-sm"></span>
               ) : products?.length ? (
@@ -143,44 +143,13 @@ const Products: NextPage = () => {
           </div>
         </div>
 
-        {/* Put this part before </body> tag */}
-        <input type="checkbox" id="my_modal_7" className="modal-toggle" />
-        <div className="modal" role="dialog">
-          <form onSubmit={(e) => submitProduct(e)} className="modal-box flex flex-col">
-            <h3 className="text-lg font-bold">Add a product.</h3>
-            <p className="py-4 flex flex-col justify-between items-center gap-2">
-              <label htmlFor="name">Upload image</label>
-              <input
-                onChange={e => setProductImage(e.target.value)}
-                type="file"
-                className="outline outline-1 p-2 rounded-lg"
-              />
-              <label htmlFor="name">Product name</label>
-              <input
-                onChange={e => setProductName(e.target.value)}
-                type="text"
-                className="outline outline-1 p-2 rounded-lg"
-              />
-              <label htmlFor="name">Price</label>
-              <input
-                onChange={e => setProductPrice(e.target.value)}
-                type="number"
-                className="outline outline-1 p-2 rounded-lg"
-              />
-              <label htmlFor="name">Quantity</label>
-              <input
-                onChange={e => setProductQuantity(e.target.value)}
-                type="number"
-                className="outline outline-1 p-2 rounded-lg"
-              />
-            </p>
-
-            <button disabled={!isFormComplete} type="submit" className="btn w-[100px] bg-base-300 place-self-end">
-              Post!
-            </button>
-          </form>
-          <label htmlFor="my_modal_7" className="modal-backdrop"></label>
-        </div>
+        <AddProduct 
+          setProductImage
+          setProductName
+          setProductPrice
+          setProductQuantity
+          submitProduct={submitProduct}
+        />
       </div>
     </>
   );

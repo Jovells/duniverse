@@ -94,6 +94,10 @@ const ProductDetails: NextPage = () => {
       });
   }, []);
 
+  useEffect(() => {
+    setEthAmount(product?.price * itemQty)
+  }, [itemQty]);
+
   return (
     <>
       <div className="p-5">

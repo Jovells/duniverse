@@ -6,14 +6,14 @@ import type { NextPage } from "next";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
 /* eslint-disable @next/next/no-img-element */
-const BuyerDashboard: NextPage = () => {
+const SellerDashboard: NextPage = () => {
   const { writeContractAsync, isPending: pending } = useScaffoldWriteContract("Duniverse");
   const [productId, setProductId] = useState<any>(null);
   const [itemQty, setItemQty] = useState<any>(1);
   const [isPending, setIsPending] = useState<any>(pending);
   const route = useParams();
 
-  const buyProduct = async () => {
+  const confirmDelivery = async () => {
     console.log(productId, itemQty);
     try {
       await writeContractAsync(
@@ -68,7 +68,7 @@ const BuyerDashboard: NextPage = () => {
                 <td className="p-3">
                   <div className="space-x-2">
                     <button className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600">Appeal</button>
-                    <button className="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600">Release</button>
+                    <button className="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600">Delivered</button>
                   </div>
                 </td>
               </tr>
@@ -115,4 +115,4 @@ const BuyerDashboard: NextPage = () => {
   );
 };
 
-export default BuyerDashboard;
+export default SellerDashboard;
