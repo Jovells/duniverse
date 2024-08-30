@@ -1,0 +1,83 @@
+type Planet @entity {
+  id: ID!
+  planetId: BigInt!
+  planetName: String!
+  planetDescription: String!
+  ruler: Bytes!
+  products: [Product!]! @derivedFrom(field: "planet")
+}
+
+type Product @entity {
+  id: ID!
+  name: String!
+  productId: BigInt!
+  planet: Planet!
+  seller: Seller!
+  quantity: BigInt!
+  price: BigInt!
+  sales: BigInt!
+  purchases: [Purchase!]! @derivedFrom(field: "product")
+}
+
+type Seller @entity {
+  id: ID!
+  address: Bytes!
+  products: [Product!]! @derivedFrom(field: "seller") # This should be correct now
+  approvals: [ApprovalRequest!]! @derivedFrom(field: "seller") # This should also be correct
+}
+
+type Purchase @entity {
+  id: ID!
+  purchaseId: BigInt!
+  product: Product!
+  buyer: Bytes!
+  seller: Seller! # Ensure this references the Seller entity correctly
+  amount: BigInt!
+  isReleased: Boolean!
+  isDelivered: Boolean!
+  isRefunded: Boolean!
+  appealRaised: Boolean!
+}
+
+type ApprovalRequest @entity {
+  id: ID!
+  seller: Seller! # Ensure this references the Seller entity correctly
+  planet: Planet!
+}
+
+type ApprovalEvent @entity {
+  id: ID!
+  eventType: String!
+  seller: Seller! # Ensure this references the Seller entity correctly
+  planet: Planet!
+}
+
+type Appeal @entity {
+  id: ID!
+  purchase: Purchase!
+  by: Bytes!
+}
+
+type ReleaseEvent @entity {
+  id: ID!
+  purchase: Purchase!
+  amount: BigInt!
+}
+
+type RefundEvent @entity {
+  id: ID!
+  purchase: Purchase!
+  amount: BigInt!
+}
+
+type SaleEvent @entity {
+  id: ID!
+  purchase: Purchase!
+  totalAmount: BigInt!
+}
+
+type DeliveredEvent @entity {
+  id: ID!
+  purchase: Purchase!
+  totalAmount: BigInt!
+}
