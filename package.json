@@ -50,5 +50,9 @@
   "packageManager": "yarn@3.2.3",
   "engines": {
     "node": ">=18.17.0"
+  },
+  "dependencies": {
+    "@apollo/client": "^3.11.5",
+    "apollo-server-micro": "^3.13.0"
   }
 }

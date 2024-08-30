@@ -12,7 +12,10 @@ const Home: NextPage = () => {
   return (
     <>
       <div className="flex items-center flex-col flex-grow">
-        <div className="flex-grow flex-col bg-base-300 w-full px-8 py-12 items-center justify-center gap-10">
+        <div className="relative flex-grow flex-col bg-base-300 w-full px-8 py-12 items-center justify-center gap-10">
+          <div className="hidden absolute right-10 justify-between mb-5">
+            <button className="text-[20px] font-bold outline outline-1 p-2 rounded-lg">➕ Create Store</button>
+          </div>
           <h1 className="text-center flex flex-col justify-center items-center gap-10">
             <span className="block text-2xl mb-2">Decentralized Shopping</span>
             <span className="block text-4xl font-bold">D-universe</span>
@@ -36,7 +39,7 @@ const Home: NextPage = () => {
             "
             >
               <ShoppingCartIcon className="h-8 w-8 fill-secondary" />
-              <p>
+              <p className="flex flex-col">
                 <span>Shop right away</span>
                 <span>Explore our wide range of stores and products</span>
               </p>

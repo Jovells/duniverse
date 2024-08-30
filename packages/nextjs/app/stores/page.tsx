@@ -3,8 +3,15 @@
 import { useState } from "react";
 import StoreCard from "./_components/StoreCard";
 import type { NextPage } from "next";
+import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
+
 
 const Stores: NextPage = () => {
+  // const { data, isLoading } = useScaffoldReadContract({
+  //   contractName: "Duniverse",
+  //   functionName: "",
+  // });
+
   const [stores] = useState<any[]>([
     {
       name: "Absa Bank",
