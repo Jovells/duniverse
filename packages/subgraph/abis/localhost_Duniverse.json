@@ -3,7 +3,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_ECEDI_ADDRESS",
+        "name": "_MOCKUSDT_ADDRESS",
         "type": "address"
       }
     ],
@@ -165,6 +165,12 @@
       },
       {
         "indexed": false,
+        "internalType": "string",
+        "name": "productName",
+        "type": "string"
+      },
+      {
+        "indexed": false,
         "internalType": "uint256",
         "name": "quantity",
         "type": "uint256"
@@ -262,7 +268,7 @@
   },
   {
     "inputs": [],
-    "name": "ECEDI_ADDRESS",
+    "name": "MOCKUSDT_ADDRESS",
     "outputs": [
       {
         "internalType": "address",
@@ -276,9 +282,9 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "_productId",
-        "type": "uint256"
+        "internalType": "string",
+        "name": "_productName",
+        "type": "string"
       },
       {
         "internalType": "uint256",
@@ -635,6 +641,19 @@
   },
   {
     "inputs": [],
+    "name": "numProducts",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "numPurchases",
     "outputs": [
       {
@@ -703,6 +722,11 @@
     ],
     "name": "products",
     "outputs": [
+      {
+        "internalType": "string",
+        "name": "productName",
+        "type": "string"
+      },
       {
         "internalType": "uint256",
         "name": "productId",

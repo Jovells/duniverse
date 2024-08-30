@@ -7,7 +7,7 @@ dataSources:
     network: localhost
     source:
       abi: Duniverse
-      address: "0xc3e53F4d16Ae77Db1c982e75a937B9f60FE63690"
+      address: "0xa82fF9aFd8f496c3d6ac40E2a0F282E47488CFc9"
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -31,7 +31,7 @@ dataSources:
         - event: PlanetCreated(indexed uint256,string,string,indexed address)
           handler: handlePlanetCreated
         - event: ProductAdded(indexed uint256,indexed uint256,indexed
-            address,uint256,uint256)
+            address,string,uint256,uint256)
           handler: handleProductAdded
         - event: Sale(indexed address,uint256,uint256)
           handler: handleSale

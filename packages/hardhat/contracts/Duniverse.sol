@@ -2,11 +2,11 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "./eCedi.sol";
+import "./mockUSDT.sol";
 
 contract Duniverse {
     address public owner;  // The owner of the contract
-    address public ECEDI_ADDRESS;
+    address public MOCKUSDT_ADDRESS;
 
     mapping(uint256 => Purchase) public purchases;
     mapping(uint256 => Product) public products;
@@ -16,6 +16,7 @@ contract Duniverse {
     mapping(uint256 => bool) public appeals; // New mapping for appeals
 
     uint256 public numPurchases;
+    uint256 public numProducts;
 
     struct Planet {
         uint256 planetId;
@@ -36,6 +37,7 @@ contract Duniverse {
     }
 
     struct Product {
+        string productName;
         uint256 productId;
         uint256 planetId;
         address seller;
@@ -134,19 +136,21 @@ contract Duniverse {
         uint256 indexed productId,
         uint256 indexed planetId,
         address indexed seller,
+        string name,
         uint256 quantity,
         uint256 price
     );
 
-    constructor(address _ECEDI_ADDRESS) {
+    constructor(address _MOCKUSDT_ADDRESS) {
         owner = msg.sender;
-        ECEDI_ADDRESS = _ECEDI_ADDRESS;
+        MOCKUSDT_ADDRESS = _MOCKUSDT_ADDRESS;
     }
 
     // Function to add a product
-    function addProduct(uint256 _productId, uint256 _planetId, address _seller, uint256 _quantity, uint256 _price) public onlyApprovedSeller(_planetId) {
-        products[_productId] = Product(_productId, _planetId, _seller, _quantity, _price, 0);
-        emit ProductAdded(_productId, _planetId, _seller, _quantity, _price); // Emit event when a product is added
+    function addProduct(string memory _productName, uint256 _planetId, address _seller, uint256 _quantity, uint256 _price) public onlyApprovedSeller(_planetId) {
+        uint256 _productId = ++numProducts;
+        products[_productId] = Product(_productName, _productId, _planetId, _seller, _quantity, _price, 0);
+        emit ProductAdded(_productId, _planetId, _seller,_productName, _quantity, _price); // Emit event when a product is added
     }
 
     // Function for sellers to request approval
@@ -218,7 +222,7 @@ contract Duniverse {
     function purchaseProduct(uint256 _productId, uint256 _quantity) public payable {
         require(products[_productId].quantity >= _quantity, "Insufficient inventory or product does not exist");
         uint256 totalPrice = products[_productId].price * _quantity;
-        ECedi(ECEDI_ADDRESS).transferFrom(msg.sender, address(this), totalPrice);
+        MockUSDT(MOCKUSDT_ADDRESS).transferFrom(msg.sender, address(this), totalPrice);
         numPurchases++;
         emit Sale(msg.sender, numPurchases, totalPrice);
         products[_productId].quantity -= _quantity;
@@ -230,7 +234,7 @@ contract Duniverse {
     // Function to issue a refund
     function release(uint256 _purchaseId) external onlyBuyer(_purchaseId) {
         require(!purchases[_purchaseId].isReleased, "Funds are already released");
-        ECedi(ECEDI_ADDRESS).transfer(purchases[_purchaseId].seller, purchases[_purchaseId].amount);
+        MockUSDT(MOCKUSDT_ADDRESS).transfer(purchases[_purchaseId].seller, purchases[_purchaseId].amount);
         purchases[_purchaseId].isReleased = true;
         emit Release(msg.sender, _purchaseId, purchases[_purchaseId].amount);
     }
@@ -238,7 +242,7 @@ contract Duniverse {
     function releaseFor(uint256 _purchaseId) external onlyPurchaseRuler(_purchaseId) {
         require(appeals[_purchaseId], "Appeal must be raised before release");
         require(!purchases[_purchaseId].isReleased, "Funds are already released");
-        ECedi(ECEDI_ADDRESS).transfer(purchases[_purchaseId].seller, purchases[_purchaseId].amount);
+        MockUSDT(MOCKUSDT_ADDRESS).transfer(purchases[_purchaseId].seller, purchases[_purchaseId].amount);
         purchases[_purchaseId].isReleased = true;
         emit Release(msg.sender, _purchaseId, purchases[_purchaseId].amount);
     }
@@ -247,7 +251,7 @@ contract Duniverse {
         require(appeals[_purchaseId], "Appeal must be raised before refund");
         require(!purchases[_purchaseId].isReleased, "Funds are already released");
         require(!purchases[_purchaseId].isRefunded, "Purchase already refunded");
-        ECedi(ECEDI_ADDRESS).transfer(purchases[_purchaseId].buyer, purchases[_purchaseId].amount);
+        MockUSDT(MOCKUSDT_ADDRESS).transfer(purchases[_purchaseId].buyer, purchases[_purchaseId].amount);
         emit Refund(msg.sender, purchases[_purchaseId].seller, _purchaseId, purchases[_purchaseId].amount);
         purchases[_purchaseId].isRefunded = true;
     }

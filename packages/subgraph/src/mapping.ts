@@ -54,6 +54,7 @@ export function handleProductAdded(event: ProductAdded): void {
   product.seller = seller.id; // Assign the seller ID (string) to the product
 
   product.quantity = event.params.quantity;
+  product.name = event.params.productName;
   product.price = event.params.price;
   product.sales = BigInt.fromI32(0); // Initialize sales to 0
   product.save();

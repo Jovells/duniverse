@@ -1,7 +1,7 @@
 import { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { Duniverse, Duniverse__factory, ECedi, ECedi__factory } from "../typechain-types";
+import { Duniverse, Duniverse__factory, MockUSDT, MockUSDT__factory } from "../typechain-types";
 
 describe("Duniverse", function () {
   let buyer: SignerWithAddress,
@@ -9,24 +9,25 @@ describe("Duniverse", function () {
     nonBuyer: SignerWithAddress,
     seller: SignerWithAddress,
     ruler: SignerWithAddress;
-  let eCedi: ECedi, duniverseContract: Duniverse;
+  let mockUSDT: MockUSDT, duniverseContract: Duniverse;
   const totalAmount = ethers.parseUnits("1", 6); // 100 tokens
   const planetId = 1;
   const productId = 1;
+  const productName = "Product 1";
 
   before(async () => {
     [buyer, buyer2, nonBuyer, seller, ruler] = await ethers.getSigners();
 
-    // Deploy the ECedi contract
-    const ECedi: ECedi__factory = await ethers.getContractFactory("ECedi");
-    eCedi = await ECedi.deploy();
-    await eCedi.deploymentTransaction();
-    eCedi.connect(buyer).mint();
-    eCedi.connect(buyer2).mint();
+    // Deploy the MockUSDT contract
+    const MockUSDT: MockUSDT__factory = await ethers.getContractFactory("MockUSDT");
+    mockUSDT = await MockUSDT.deploy();
+    await mockUSDT.deploymentTransaction();
+    mockUSDT.connect(buyer).mint();
+    mockUSDT.connect(buyer2).mint();
 
     // Deploy the Duniverse contract
     const Duniverse: Duniverse__factory = await ethers.getContractFactory("Duniverse");
-    duniverseContract = await Duniverse.deploy(eCedi.target);
+    duniverseContract = await Duniverse.deploy(mockUSDT.target);
     await duniverseContract.deploymentTransaction();
   });
 
@@ -55,14 +56,15 @@ describe("Duniverse", function () {
 
   describe("Product Purchase", function () {
     it("should allow the seller to add a product", async () => {
-      await duniverseContract.connect(seller).addProduct(productId, planetId, seller.address, 10, totalAmount);
+      await duniverseContract.connect(seller).addProduct(productName, planetId, seller.address, 10, totalAmount);
       const product = await duniverseContract.products(productId);
+      console.log("product", product);
       expect(product.seller).to.equal(seller.address);
       expect(product.price).to.equal(totalAmount);
     });
 
     it("should allow the buyer to purchase a product", async () => {
-      await eCedi.connect(buyer).approve(duniverseContract.target, totalAmount);
+      await mockUSDT.connect(buyer).approve(duniverseContract.target, totalAmount);
       await duniverseContract.connect(buyer).purchaseProduct(productId, 1);
       const purchases = await duniverseContract.getPurchases(1, 1);
       expect(purchases[0].buyer).to.equal(buyer.address);
@@ -132,7 +134,7 @@ describe("Duniverse", function () {
     });
 
     it("should allow the ruler to refund a purchase after an appeal is raised", async () => {
-      await eCedi.connect(buyer2).approve(duniverseContract.target, totalAmount);
+      await mockUSDT.connect(buyer2).approve(duniverseContract.target, totalAmount);
       await duniverseContract.connect(buyer2).purchaseProduct(productId, 1);
       const purchaseId = 2;
       await duniverseContract.connect(buyer2).raiseAppeal(purchaseId);
@@ -143,7 +145,7 @@ describe("Duniverse", function () {
 
     it("should not allow the ruler to refund a purchase without an appeal", async () => {
       //make a purchase
-      await eCedi.connect(buyer2).approve(duniverseContract.target, totalAmount);
+      await mockUSDT.connect(buyer2).approve(duniverseContract.target, totalAmount);
       await duniverseContract.connect(buyer2).purchaseProduct(productId, 1);
       const purchaseId = 3;
       const refund = duniverseContract.connect(ruler).refund(purchaseId, { gasLimit: 3e7 });
@@ -169,7 +171,7 @@ describe("Duniverse", function () {
     });
 
     it("should allow the ruler to release funds for a purchase after an appeal is raised", async () => {
-      await eCedi.connect(buyer2).approve(duniverseContract.target, totalAmount);
+      await mockUSDT.connect(buyer2).approve(duniverseContract.target, totalAmount);
       await duniverseContract.connect(buyer2).purchaseProduct(productId, 1);
       const purchaseId = 3;
       await duniverseContract.connect(buyer2).raiseAppeal(purchaseId);
@@ -180,7 +182,7 @@ describe("Duniverse", function () {
 
     it("should not allow the ruler to release funds for a purchase without an appeal", async () => {
       //make a purchase
-      await eCedi.connect(buyer2).approve(duniverseContract.target, totalAmount);
+      await mockUSDT.connect(buyer2).approve(duniverseContract.target, totalAmount);
       await duniverseContract.connect(buyer2).purchaseProduct(productId, 1);
       const purchaseId = 4;
       const release = duniverseContract.connect(ruler).releaseFor(purchaseId, { gasLimit: 3e7 });
@@ -195,7 +197,7 @@ describe("Duniverse", function () {
 
     it("should not allow the ruler to release funds for a purchase that has already been released", async () => {
       //make a purchase
-      await eCedi.connect(buyer2).approve(duniverseContract.target, totalAmount);
+      await mockUSDT.connect(buyer2).approve(duniverseContract.target, totalAmount);
       await duniverseContract.connect(buyer2).purchaseProduct(productId, 1);
 
       //raise appeal
