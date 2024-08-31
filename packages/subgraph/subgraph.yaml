@@ -4,10 +4,10 @@ schema:
 dataSources:
   - kind: ethereum
     name: Duniverse
-    network: sepolia
+    network: localhost
     source:
       abi: Duniverse
-      address: "0x83bd7e53dE6ba627f3f01fA6A8C5d665E0A860DC"
+      address: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7

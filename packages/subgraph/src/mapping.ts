@@ -26,17 +26,12 @@ import {
   DeliveredEvent,
 } from "../generated/schema";
 
-// Utility function to get the current timestamp
-function getCurrentTimestamp(): BigInt {
-  return BigInt.fromI32(Date.now() / 1000);
-}
-
 // Handle the creation of a new planet
 export function handlePlanetCreated(event: PlanetCreated): void {
   let planet = new Planet(event.params.planetId.toString());
   planet.planetId = event.params.planetId;
   planet.planetName = event.params.planetName;
-  planet.planetImage = event.params.planetImage; // Added planetImage
+  planet.planetImage = event.params.planetImage;
   planet.planetDescription = event.params.planetDescription;
   planet.ruler = event.params.ruler;
   planet.createdAt = event.block.timestamp;
@@ -48,7 +43,7 @@ export function handlePlanetCreated(event: PlanetCreated): void {
 export function handleProductAdded(event: ProductAdded): void {
   let product = new Product(event.params.productId.toString());
   product.productId = event.params.productId;
-  product.productImage = event.params.productImage; // Added productImage
+  product.productImage = event.params.productImage;
   product.name = event.params.name;
   product.quantity = event.params.quantity;
   product.price = event.params.price;
@@ -90,7 +85,7 @@ export function handleSale(event: Sale): void {
     purchase = new Purchase(event.params.purchaseId.toString());
     purchase.purchaseId = event.params.purchaseId;
 
-    let product = Product.load(event.params.purchaseId.toString());
+    let product = Product.load(purchase.product);
     if (product) {
       purchase.product = product.id;
       purchase.seller = product.seller;
@@ -181,101 +176,114 @@ export function handleDelivered(event: Delivered): void {
 
 // Handle approval requests from sellers
 export function handleApprovalRequested(event: ApprovalRequested): void {
-  let approvalRequest = new ApprovalRequest(event.transaction.hash.toHex());
+                                                                          let approvalRequestId = `${event.params.seller.toHex()}-${event.params.planetId.toString()}`;
+                                                                          let approvalRequest = ApprovalRequest.load(
+                                                                            approvalRequestId
+                                                                          );
 
-  let seller = Seller.load(event.params.seller.toHex());
-  if (!seller) {
-    seller = new Seller(event.params.seller.toHex());
-    seller.address = event.params.seller;
-    seller.createdAt = event.block.timestamp;
-    seller.updatedAt = event.block.timestamp;
-    seller.save();
-  }
-  approvalRequest.seller = seller.id;
+                                                                          // If no existing request, create a new one
+                                                                          if (
+                                                                            !approvalRequest
+                                                                          ) {
+                                                                            approvalRequest = new ApprovalRequest(
+                                                                              approvalRequestId
+                                                                            );
+                                                                            approvalRequest.seller = event.params.seller.toHex();
+                                                                            approvalRequest.planet = event.params.planetId.toString();
+                                                                            approvalRequest.status =
+                                                                              "requested";
+                                                                            approvalRequest.createdAt =
+                                                                              event.block.timestamp;
+                                                                          }
 
-  let planet = Planet.load(event.params.planetId.toString());
-  if (planet) {
-    approvalRequest.planet = planet.id;
-    planet.updatedAt = event.block.timestamp;
-    planet.save();
-  }
-
-  approvalRequest.status = "requested";
-  approvalRequest.createdAt = event.block.timestamp;
-  approvalRequest.updatedAt = event.block.timestamp;
-  approvalRequest.save();
-}
-
+                                                                          // Update the updatedAt field in both cases
+                                                                          approvalRequest.updatedAt =
+                                                                            event.block.timestamp;
+                                                                          approvalRequest.save();
+                                                                        }
 // Handle approvals granted to sellers
 export function handleApprovalGranted(event: ApprovalGranted): void {
-  let approvalEvent = new ApprovalEvent(event.transaction.hash.toHex());
-  approvalEvent.eventType = "granted";
+                                                                      let approvalRequestId = `${event.params.seller.toHex()}-${event.params.planetId.toString()}`;
+                                                                      let approvalRequest = ApprovalRequest.load(
+                                                                        approvalRequestId
+                                                                      );
 
-  let seller = Seller.load(event.params.seller.toHex());
-  if (!seller) {
-    seller = new Seller(event.params.seller.toHex());
-    seller.address = event.params.seller;
-    seller.createdAt = event.block.timestamp;
-    seller.updatedAt = event.block.timestamp;
-    seller.save();
-  }
-  approvalEvent.seller = seller.id;
+                                                                      if (
+                                                                        approvalRequest
+                                                                      ) {
+                                                                        // Update the existing request to "granted" if it's currently "requested"
+                                                                        if (
+                                                                          approvalRequest.status ==
+                                                                          "requested"
+                                                                        ) {
+                                                                          approvalRequest.status =
+                                                                            "granted";
+                                                                          approvalRequest.updatedAt =
+                                                                            event.block.timestamp;
+                                                                          approvalRequest.save();
+                                                                        }
+                                                                      } else {
+                                                                        // This should never happen, but if it does, we create a new entry with "granted"
+                                                                        approvalRequest = new ApprovalRequest(
+                                                                          approvalRequestId
+                                                                        );
+                                                                        approvalRequest.seller = event.params.seller.toHex();
+                                                                        approvalRequest.planet = event.params.planetId.toString();
+                                                                        approvalRequest.status =
+                                                                          "granted";
+                                                                        approvalRequest.createdAt =
+                                                                          event.block.timestamp;
+                                                                        approvalRequest.updatedAt =
+                                                                          event.block.timestamp;
+                                                                        approvalRequest.save();
+                                                                      }
 
-  let planet = Planet.load(event.params.planetId.toString());
-  if (planet) {
-    approvalEvent.planet = planet.id;
-    planet.updatedAt = event.block.timestamp;
-    planet.save();
-  }
-
-  approvalEvent.createdAt = event.block.timestamp;
-  approvalEvent.updatedAt = event.block.timestamp;
-  approvalEvent.save();
-
-  let approvalRequest = ApprovalRequest.load(
-    approvalEvent.seller + "-" + approvalEvent.planet
-  );
-  if (approvalRequest != null) {
-    approvalRequest.status = "granted";
-    approvalRequest.updatedAt = event.block.timestamp;
-    approvalRequest.save();
-  }
-}
+                                                                      // Log the approval event
+                                                                      let approvalEvent = new ApprovalEvent(
+                                                                        event.transaction.hash.toHex()
+                                                                      );
+                                                                      approvalEvent.eventType =
+                                                                        "granted";
+                                                                      approvalEvent.seller = event.params.seller.toHex();
+                                                                      approvalEvent.planet = event.params.planetId.toString();
+                                                                      approvalEvent.createdAt =
+                                                                        event.block.timestamp;
+                                                                      approvalEvent.updatedAt =
+                                                                        event.block.timestamp;
+                                                                      approvalEvent.save();
+                                                                    }
 
 // Handle approvals declined for sellers
 export function handleApprovalDeclined(event: ApprovalDeclined): void {
-  let approvalEvent = new ApprovalEvent(event.transaction.hash.toHex());
-  approvalEvent.eventType = "declined";
+  let approvalRequestId = `${event.params.seller.toHex()}-${event.params.planetId.toString()}`;
+  let approvalRequest = ApprovalRequest.load(approvalRequestId);
 
-  let seller = Seller.load(event.params.seller.toHex());
-  if (!seller) {
-    seller = new Seller(event.params.seller.toHex());
-    seller.address = event.params.seller;
-    seller.createdAt = event.block.timestamp;
-    seller.updatedAt = event.block.timestamp;
-    seller.save();
-  }
-  approvalEvent.seller = seller.id;
-
-  let planet = Planet.load(event.params.planetId.toString());
-  if (planet) {
-    approvalEvent.planet = planet.id;
-    planet.updatedAt = event.block.timestamp;
-    planet.save();
-  }
-
-  approvalEvent.createdAt = event.block.timestamp;
-  approvalEvent.updatedAt = event.block.timestamp;
-  approvalEvent.save();
-
-  let approvalRequest = ApprovalRequest.load(
-    approvalEvent.seller + "-" + approvalEvent.planet
-  );
-  if (approvalRequest != null) {
+  if (approvalRequest) {
+    // Update the existing request to "declined" if it's currently "requested"
+    if (approvalRequest.status == "requested") {
+      approvalRequest.status = "declined";
+      approvalRequest.updatedAt = event.block.timestamp;
+      approvalRequest.save();
+    }
+  } else {
+    // This should never happen, but if it does, we create a new entry with "declined"
+    approvalRequest = new ApprovalRequest(approvalRequestId);
+    approvalRequest.seller = event.params.seller.toHex();
+    approvalRequest.planet = event.params.planetId.toString();
     approvalRequest.status = "declined";
+    approvalRequest.createdAt = event.block.timestamp;
     approvalRequest.updatedAt = event.block.timestamp;
     approvalRequest.save();
   }
+
+  // Log the approval event
+  let approvalEvent = new ApprovalEvent(event.transaction.hash.toHex());
+  approvalEvent.eventType = "declined";
+  approvalEvent.seller = event.params.seller.toHex();
+  approvalEvent.planet = event.params.planetId.toString();
+  approvalEvent.createdAt = event.block.timestamp;
+  approvalEvent.updatedAt = event.block.timestamp;
+  approvalEvent.save();
 }
 
 // Handle appeals raised by buyers or sellers

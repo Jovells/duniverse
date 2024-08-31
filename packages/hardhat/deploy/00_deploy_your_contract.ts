@@ -134,17 +134,17 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
   // Main deployment logic
   try {
     // Check and send ETH to ruler1, ruler2, seller1, and seller2
-    // await checkAndSendEth(ruler1.address, ruler1, "Ruler 1");
-    // await checkAndSendEth(ruler2.address, ruler2, "Ruler 2");
-    // await checkAndSendEth(seller1.address, seller1, "Seller 1");
-    // await checkAndSendEth(seller2.address, seller2, "Seller 2");
+    await checkAndSendEth(ruler1.address, ruler1, "Ruler 1");
+    await checkAndSendEth(ruler2.address, ruler2, "Ruler 2");
+    await checkAndSendEth(seller1.address, seller1, "Seller 1");
+    await checkAndSendEth(seller2.address, seller2, "Seller 2");
 
     const { duniverse } = await deployContracts();
     if (!duniverse) return;
 
-    // await createPlanets(duniverse);
-    // await requestAndApproveSellers(duniverse);
-    // await addProducts(duniverse);
+    await createPlanets(duniverse);
+    await requestAndApproveSellers(duniverse);
+    await addProducts(duniverse);
 
     console.log(`2 Planets created and products added to each planet.`);
   } catch (error) {
