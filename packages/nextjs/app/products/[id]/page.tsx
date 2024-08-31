@@ -52,7 +52,8 @@ const Products: NextPage = () => {
       price
       id
       quantity
-      seller 
+      seller
+      productImage 
     }
   }
   `;

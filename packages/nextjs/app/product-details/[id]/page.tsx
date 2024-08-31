@@ -6,8 +6,8 @@ import type { NextPage } from "next";
 import { useAccount } from "wagmi";
 import { DUNEVERSE_SEPOLIA_ADDRESS, THE_GRAPH_URL } from "~~/app/constants";
 import { Address, EtherInput } from "~~/components/scaffold-eth";
-import { useScaffoldContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import deployedContracts from "~~/contracts/deployedContracts";
+import { useScaffoldContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
 /* eslint-disable @next/next/no-img-element */
 const ProductDetails: NextPage = () => {
@@ -22,7 +22,6 @@ const ProductDetails: NextPage = () => {
   const { address } = useAccount();
   const route = useParams();
   const router = useRouter();
-
 
   async function fetchGraphQL(operationsDoc: any, operationName: any, variables: any) {
     const response = await fetch(THE_GRAPH_URL, {
@@ -48,6 +47,7 @@ const ProductDetails: NextPage = () => {
         price
         quantity
         seller 
+        productImage
       }
     }
   `;
@@ -123,11 +123,7 @@ const ProductDetails: NextPage = () => {
         <h1 className="w-100 font-bold text-xl">Product Details</h1>
 
         <div className="flex flex-wrap justify-center items-center gap-5">
-          <img
-            src="https://www.phonelectrics.com/cdn/shop/products/iPhone14Pro-3_5a1ed88a-5967-4937-b746-08ace739720f_900x.jpg?v=1663959701"
-            alt=""
-            className="w-1/4"
-          />
+          <img src={`https://ipfs.io/ipfs/${product?.productImage}`} alt="" className="w-1/4" />
           <div className="w-full sm:w-1/2 flex flex-col justify-start gap-2">
             <h1 className="text-2xl sm:text-3xl font-bold">{product?.name}</h1>
             <div className="flex justify-start items-center gap-2 p-1 font-bold">
