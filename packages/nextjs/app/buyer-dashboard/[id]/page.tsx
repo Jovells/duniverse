@@ -49,10 +49,8 @@ const BuyerDashboard: NextPage = () => {
           id
           name
           price
-          productId
           productImage
           quantity
-          updatedAt
         }
       }
     }

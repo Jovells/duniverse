@@ -1,15 +1,18 @@
 type Planet @entity {
-  id: ID! # planetId from the contract
+  id: ID!
   planetName: String!
   planetImage: String!
   planetDescription: String!
   ruler: Bytes!
   products: [Product!]! @derivedFrom(field: "planet")
   approvalRequests: [ApprovalRequest!]! @derivedFrom(field: "planet")
+  createdAt: BigInt!   
+  updatedAt: BigInt!   
 }
 
 type Product @entity {
-  id: ID! # productId from the contract
+  id: ID!
+  name: String!
   planet: Planet!
   productImage: String!
   seller: Bytes!
@@ -17,10 +20,12 @@ type Product @entity {
   price: BigInt!
   sales: BigInt!
   purchases: [Purchase!]! @derivedFrom(field: "product")
+  createdAt: BigInt!   
+  updatedAt: BigInt!   
 }
 
 type Purchase @entity {
-  id: ID! # purchaseId from the contract
+  id: ID!
   product: Product!
   buyer: Bytes!
   seller: Bytes!
@@ -28,28 +33,28 @@ type Purchase @entity {
   isReleased: Boolean!
   isDelivered: Boolean!
   isRefunded: Boolean!
-  timestamp: BigInt!
+  timestamp: BigInt!   
   appeal: Appeal @derivedFrom(field: "purchase")
 }
 
 type Appeal @entity {
-  id: ID! # purchaseId from the contract
+  id: ID!
   purchase: Purchase!
   by: Bytes!
-  timestamp: BigInt!
+  timestamp: BigInt!   
 }
 
 type ApprovalRequest @entity {
-  id: ID! # approval request ID
+  id: ID!
   seller: Bytes!
   planet: Planet!
   status: String!
-  timestamp: BigInt!
+  timestamp: BigInt!   
 }
 
 type ApprovedSeller @entity {
-  id: ID! # combination of seller address and planet ID
+  id: ID!
   seller: Bytes!
   planet: Planet!
-  approvedAt: BigInt!
+  approvedAt: BigInt! 
 }

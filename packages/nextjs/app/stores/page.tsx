@@ -37,7 +37,7 @@ const Stores: NextPage = () => {
     query MyQuery {
       planets(first: 10, orderBy: id) {
         planetDescription
-        planetId
+        id
         planetName
       }
     }

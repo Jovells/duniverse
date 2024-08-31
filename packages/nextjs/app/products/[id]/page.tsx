@@ -42,20 +42,19 @@ const Products: NextPage = () => {
   
     return await response.json();
   }
+
   
   const operation = `
-    query MyQuery {
-      products(where: { planet: "${route?.id}" }) {
-        id
-        name
-        price
-        productId
-        quantity
-        seller {
-          id
-        }
-      }
+  query MyQuery {
+    products(where: { planet: "${route?.id}"  }) {
+      id
+      name
+      price
+      id
+      quantity
+      seller 
     }
+  }
   `;
   
   function fetchMyQuery() {

@@ -41,16 +41,13 @@ const ProductDetails: NextPage = () => {
   }
 
   const operation = `
-    query MyQuery {
-      products(where: { productId: "${route?.id}" }, orderDirection: asc) {
+     query MyQuery {
+      products(where: { id: "${route?.id}" }, orderDirection: asc) {
         id
         name
         price
-        productId
         quantity
-        seller {
-          id
-        }
+        seller 
       }
     }
   `;
@@ -140,7 +137,7 @@ const ProductDetails: NextPage = () => {
             <h2>
               <b>{product?.quantity}</b> Qty available
             </h2>
-            <Address address={product?.seller?.id} />
+            <Address address={product?.seller} />
             <span>⭐⭐</span>
             <span className="w-fit">
               Lorem, ipsum dolor sit amet consectetur adipisicing elit. Distinctio quae deserunt maxime asperiores
