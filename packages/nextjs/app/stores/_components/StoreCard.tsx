@@ -9,7 +9,7 @@ const StoreCard: NextPage = ({ planet }) => {
     <>
       <Link
         href={`/products/${planet?.planetId || "1"}`}
-        className="bg-white flex items-center flex-col flex-grow shadow-xl w-fit rounded-3xl"
+        className="bg-white w-fit sm:w-1/5 flex items-center flex-col shadow-xl rounded-3xl aspect-auto"
       >
         <div className="p-5">
           <img
@@ -19,10 +19,10 @@ const StoreCard: NextPage = ({ planet }) => {
             }
             alt="Landscape picture"
             className="rounded-full"
-            style={{ width: "200px" }}
+            style={{ width: "180px" }}
           />
         </div>
-        <div className="w-full border border-black text-center rounded-3xl">
+        <div className="w-full border border-black text-center rounded-br-3xl rounded-bl-3xl">
           <h1 className="text-lg uppercase font-bold">{planet?.planetName}</h1>
           <p>{planet?.planetDescription}</p>
           {Array.from({ length: 5 }).map((_, index) => (

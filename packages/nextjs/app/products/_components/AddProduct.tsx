@@ -20,7 +20,7 @@ const AddProduct: NextPage<AddProductProps> = ({
 }) => {
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ? e.target.files[0] : null;
-    setProductImage(file);
+    setProductImage(file?.name);
   };
 
   const handleProductName = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -28,7 +28,7 @@ const AddProduct: NextPage<AddProductProps> = ({
   };
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setProductPrice(parseFloat(e.target.value));
+    setProductPrice(parseFloat(e.target.value * 10 ** 6));
   };
 
   const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {

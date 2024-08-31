@@ -18,8 +18,8 @@ const Products: NextPage = () => {
   const [products, setProducts] = useState([])
   const [productImage, setProductImage] = useState("");
   const [productName, setProductName] = useState("");
-  const [productPrice, setProductPrice] = useState(0);
-  const [productQuantity, setProductQuantity] = useState(0);
+  const [productPrice, setProductPrice] = useState<any>(0);
+  const [productQuantity, setProductQuantity] = useState<any>(0);
   const [planetId, setPlanetId] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false)
 
@@ -71,22 +71,26 @@ const Products: NextPage = () => {
       quantity: productQuantity as any,
       price: productPrice as any,
     };
-    
-    try {
-      console.log("Payload1", payload);
-      await writeContractAsync(
-        {
-          functionName: "addProduct",
-          args: [payload.productName, payload.planetId, payload.seller, payload.quantity, payload.price]
-        },
-        {
-          onBlockConfirmation: txnReceipt => {
-            console.log("📦 Transaction blockHash", txnReceipt.blockHash);
+    if(productName && planetId && productImage && connectedAddress && productQuantity && productPrice) {
+      try {
+        console.log("Payload1", payload);
+        await writeContractAsync(
+          {
+            functionName: "addProduct",
+            args: [productName, planetId, productImage, connectedAddress, productQuantity, productPrice]
           },
-        },
-      );
-    } catch (e) {
-      console.error("Error posting product", e);
+          {
+            onBlockConfirmation: txnReceipt => {
+              console.log("📦 Transaction blockHash", txnReceipt.blockHash);
+            },
+          },
+        );
+        location.reload()
+      } catch (e) {
+        console.error("Error posting product", e);
+      }
+    } else {
+      return
     }
   }
 
@@ -123,15 +127,15 @@ const Products: NextPage = () => {
       <div className="flex items-center flex-col flex-grow">
         <div className="flex-grow flex-col bg-base-300 w-full px-8 py-5 items-center justify-center gap-10">
           <div className="flex justify-between mb-5">
-            <h1 className="text-[30px]">Products</h1>
+            <h1 className="text-[25px] font-bold">Products</h1>
             {/* <button className="text-[20px] font-bold outline outline-1 p-2 rounded-lg">➕ Post</button> */}
-            <div className="absolute flex right-10 justify-between mb-5">
-              <label htmlFor="my_modal_7" className="text-[20px] font-bold outline outline-1 p-2 rounded-lg cursor-pointer">
+            <div className="absolute flex right-10 justify-between">
+              <label htmlFor="my_modal_7" className="text-[18px] font-bold outline outline-1 p-2 rounded-lg cursor-pointer">
                 ➕ Post Product
               </label>
             </div>
           </div>
-          <div className="flex flex-wrap justify-center items-center gap-5">
+          <div className="flex flex-wrap justify-center items-start gap-5">
             {isLoading ? (
                 <span className="loading loading-spinner loading-sm"></span>
               ) : products?.length ? (
@@ -144,10 +148,10 @@ const Products: NextPage = () => {
         </div>
 
         <AddProduct 
-          setProductImage
-          setProductName
-          setProductPrice
-          setProductQuantity
+          setProductImage={setProductImage}
+          setProductName={setProductName}
+          setProductPrice={setProductPrice}
+          setProductQuantity={setProductQuantity}
           submitProduct={submitProduct}
         />
       </div>

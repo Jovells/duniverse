@@ -7,10 +7,10 @@ import type { NextPage } from "next";
 import { EtherInput } from "~~/components/scaffold-eth";
 
 const ProductCard: NextPage = ({ product }) => {
-  const [ethAmount, setEthAmount] = useState(product?.price);
+  const [ethAmount, setEthAmount] = useState(product?.price / 10 ** 6);
   return (
     <>
-      <div className="bg-white flex items-center flex-col flex-grow shadow-xl w-fit rounded-xl">
+      <div className="bg-white w-fit sm:w-1/5 flex items-center flex-col shadow-xl rounded-xl aspect-auto">
         <Link href={`/product-details/${product?.productId}`}>
           <div className="p-5">
             <img
@@ -20,10 +20,13 @@ const ProductCard: NextPage = ({ product }) => {
             />
           </div>
         </Link>
-        <div className="w-full flex flex-col border border-black text-center rounded-xl">
+        <div className="w-full border border-black text-center rounded-br-xl rounded-bl-xl">
           <h1 className="text-lg uppercase font-bold">{product?.name}</h1>
           <div className="flex justify-center items-center gap-2 p-1">
-            <span>Wei/$</span> <EtherInput value={ethAmount} disabled onChange={amount => setEthAmount(amount)} />
+            <div className="flex justify-start items-center gap-2 p-1 font-bold">
+              <span>$</span>
+              <span>{ethAmount}</span>
+            </div>
           </div>
           <span>⭐⭐</span>
         </div>

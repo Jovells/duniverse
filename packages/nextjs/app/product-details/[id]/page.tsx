@@ -1,21 +1,28 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import type { NextPage } from "next";
-import { THE_GRAPH_URL } from "~~/app/constants";
+import { useAccount } from "wagmi";
+import { DUNEVERSE_SEPOLIA_ADDRESS, THE_GRAPH_URL } from "~~/app/constants";
 import { Address, EtherInput } from "~~/components/scaffold-eth";
-import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import { useScaffoldContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import deployedContracts from "~~/contracts/deployedContracts";
 
 /* eslint-disable @next/next/no-img-element */
 const ProductDetails: NextPage = () => {
   const { writeContractAsync, isPending: pending } = useScaffoldWriteContract("Duniverse");
+  const { writeContractAsync: writeMockUSDTAsync, isPending: approvalPending } = useScaffoldWriteContract("MockUSDT");
   const [productId, setProductId] = useState<any>(null);
   const [product, setProduct] = useState({});
   const [itemQty, setItemQty] = useState<any>(1);
   const [isPending, setIsPending] = useState<any>(pending);
-  const [ethAmount, setEthAmount] = useState(product?.price);
+  const [isApprovalPending, setIsApprovalPending] = useState<any>(approvalPending);
+  const [ethAmount, setEthAmount] = useState<number | null>(null);
+  const { address } = useAccount();
   const route = useParams();
+  const router = useRouter();
+
 
   async function fetchGraphQL(operationsDoc: any, operationName: any, variables: any) {
     const response = await fetch(THE_GRAPH_URL, {
@@ -53,8 +60,21 @@ const ProductDetails: NextPage = () => {
   }
 
   const buyProduct = async () => {
+    setIsPending(true);
     console.log(productId, itemQty);
     try {
+      await writeMockUSDTAsync(
+        {
+          functionName: "approve",
+          args: [DUNEVERSE_SEPOLIA_ADDRESS, product?.price],
+        },
+        {
+          onBlockConfirmation: txnReceipt => {
+            console.log("📦 Transaction blockHash", txnReceipt.blockHash);
+          },
+        },
+      );
+
       await writeContractAsync(
         {
           functionName: "purchaseProduct",
@@ -66,6 +86,8 @@ const ProductDetails: NextPage = () => {
           },
         },
       );
+      router?.push(`/buyer-dashboard/${address}`);
+      setIsPending(false);
     } catch (e) {
       setIsPending(false);
       console.error("Error posting product", e);
@@ -84,9 +106,9 @@ const ProductDetails: NextPage = () => {
         if (errors) {
           console.error(errors);
         } else {
-          setProduct(data?.products[0])
+          setProduct(data?.products[0]);
           console.log(data?.products[0]);
-          setEthAmount(data?.products[0]?.price)
+          setEthAmount((data.products[0].price / 10 ** 6) * itemQty);
         }
       })
       .catch(error => {
@@ -95,7 +117,7 @@ const ProductDetails: NextPage = () => {
   }, []);
 
   useEffect(() => {
-    setEthAmount(product?.price * itemQty)
+    setEthAmount((product.price / 10 ** 6) * itemQty);
   }, [itemQty]);
 
   return (
@@ -111,10 +133,13 @@ const ProductDetails: NextPage = () => {
           />
           <div className="w-full sm:w-1/2 flex flex-col justify-start gap-2">
             <h1 className="text-2xl sm:text-3xl font-bold">{product?.name}</h1>
-            <div className="flex justify-start items-center gap-2 p-1">
-              <span>Wei/$</span> <EtherInput value={ethAmount} disabled onChange={amount => setEthAmount(amount)} />
+            <div className="flex justify-start items-center gap-2 p-1 font-bold">
+              <span>$</span>
+              <span>{ethAmount}</span>
             </div>
-            <h2>{product?.quantity} available</h2>
+            <h2>
+              <b>{product?.quantity}</b> Qty available
+            </h2>
             <Address address={product?.seller?.id} />
             <span>⭐⭐</span>
             <span className="w-fit">
