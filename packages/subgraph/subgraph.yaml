@@ -4,10 +4,11 @@ schema:
 dataSources:
   - kind: ethereum
     name: Duniverse
-    network: localhost
+    network: sepolia
     source:
       abi: Duniverse
-      address: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"
+      address: "0x420CD61BeeD23ef827df55edCFc1095406f4a148"
+      startBlock: 6605371
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -15,39 +16,33 @@ dataSources:
       entities:
         - Planet
         - Product
-        - Seller
-        - Buyer
         - Purchase
-        - ApprovalRequest
-        - ApprovalEvent
         - Appeal
-        - ReleaseEvent
-        - RefundEvent
-        - SaleEvent
-        - DeliveredEvent
+        - ApprovalRequest
+        - ApprovedSeller
       abis:
         - name: Duniverse
           file: ./abis/localhost_Duniverse.json
       eventHandlers:
-        - event: AppealRaised(indexed uint256,indexed address)
-          handler: handleAppealRaised
-        - event: ApprovalDeclined(indexed address,uint256)
-          handler: handleApprovalDeclined
-        - event: ApprovalGranted(indexed address,uint256)
-          handler: handleApprovalGranted
-        - event: ApprovalRequested(indexed address,uint256)
-          handler: handleApprovalRequested
-        - event: Delivered(indexed address,uint256,uint256)
-          handler: handleDelivered
         - event: PlanetCreated(indexed uint256,string,string,string,indexed address)
           handler: handlePlanetCreated
         - event: ProductAdded(indexed uint256,indexed uint256,indexed
             address,string,string,uint256,uint256)
           handler: handleProductAdded
-        - event: Refund(indexed address,indexed address,uint256,uint256)
-          handler: handleRefund
-        - event: Release(indexed address,uint256,uint256)
-          handler: handleRelease
-        - event: Sale(indexed address,uint256,uint256)
+        - event: Sale(indexed uint256,uint256,indexed address,indexed address,uint256)
           handler: handleSale
+        - event: Delivered(indexed address,indexed uint256,uint256)
+          handler: handleDelivered
+        - event: Release(indexed address,indexed uint256,uint256)
+          handler: handleRelease
+        - event: Refund(indexed address,indexed address,indexed uint256,uint256)
+          handler: handleRefund
+        - event: AppealRaised(indexed uint256,indexed address)
+          handler: handleAppealRaised
+        - event: ApprovalRequested(indexed address,indexed uint256)
+          handler: handleApprovalRequested
+        - event: ApprovalGranted(indexed address,indexed uint256)
+          handler: handleApprovalGranted
+        - event: ApprovalDeclined(indexed address,indexed uint256)
+          handler: handleApprovalDeclined
       file: ./src/mapping.ts

@@ -83,43 +83,45 @@ contract Duniverse {
     }
 
     event Sale(
+        uint256 indexed purchaseId,
+        uint256 productId,
         address indexed buyer,
-        uint256 purchaseId,
+        address indexed seller,
         uint256 totalAmount
     );
 
     event Refund(
         address indexed buyer,
         address indexed seller,
-        uint256 purchaseId,
+        uint256 indexed purchaseId,
         uint256 totalAmount
     );
 
     event Release(
         address indexed buyer,
-        uint256 purchaseId,
+        uint256 indexed purchaseId,
         uint256 totalAmount
     );
 
     event Delivered(
         address indexed buyer,
-        uint256 purchaseId,
+        uint256 indexed purchaseId,
         uint256 totalAmount
     );
 
     event ApprovalRequested(
         address indexed seller,
-        uint256 planetId
+        uint256 indexed planetId
     );
 
     event ApprovalGranted(
         address indexed seller,
-        uint256 planetId
+        uint256 indexed planetId
     );
 
     event ApprovalDeclined(
         address indexed seller,
-        uint256 planetId
+        uint256 indexed planetId
     );
 
     event AppealRaised(
@@ -238,11 +240,11 @@ contract Duniverse {
     uint256 totalPrice = products[_productId].price * _quantity;
     MockUSDT(MOCKUSDT_ADDRESS).transferFrom(msg.sender, address(this), totalPrice);
     numPurchases++;
-    emit Sale(msg.sender, numPurchases, totalPrice);
+
     products[_productId].quantity -= _quantity;
     products[_productId].sales += _quantity;
     purchases[numPurchases] = Purchase(numPurchases, _productId, msg.sender, products[_productId].seller, totalPrice, false, false, false);
-    emit Sale(msg.sender, numPurchases, _quantity);
+    emit Sale(numPurchases, _productId, msg.sender, products[_productId].seller, _quantity);
 }
 
     // Function to issue a refund

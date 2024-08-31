@@ -1,6 +1,7 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
 import { ethers } from "hardhat";
+// import deployToSkSync from "./deploy_zksync";
 // import { Wallet } from "zksync-web3";
 
 const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
@@ -35,7 +36,12 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
     let mockUSDT, duniverse;
 
     if (isZkSync) {
-      console.log("zksync deployment not working here. use Atlas");
+      // let duniverseAddress = await deployToSkSync();
+      // if (!duniverseAddress) {
+      //   throw new Error("failed");
+      // }
+      // duniverse = await ethers.getContractAt("Duniverse", duniverseAddress);
+      console.log("zkSync deployment not supported yet.");
     } else {
       // Regular deployment
       console.log("Deploying MockUSDT...");
@@ -105,7 +111,7 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
   // Function to add products to planets
   async function addProducts(duniverse: any) {
     console.log("Adding products to planet 1...");
-    const products1 = ["iPhone 16", "Samsung Galaxy", "Tesla Model 3", "Rolex Watch", "Yacht"];
+    const products1 = ["Megaphone 20",];
     for (let i = 0; i < products1.length; i++) {
       const addProductTx = await duniverse
         .connect(seller1)
@@ -116,11 +122,8 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
 
     console.log("Adding products to planet 2...");
     const products2 = [
-      "chamber and hall",
-      "6 bedroom mansion",
-      "5 bedroom house",
-      "4 bedroom house",
-      "3 bedroom house",
+      "My Mansion",
+      "Blue house",
     ];
     for (let i = 0; i < products2.length; i++) {
       const addProductTx = await duniverse

@@ -39,7 +39,7 @@
         "type": "address"
       },
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "uint256",
         "name": "planetId",
         "type": "uint256"
@@ -58,7 +58,7 @@
         "type": "address"
       },
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "uint256",
         "name": "planetId",
         "type": "uint256"
@@ -77,7 +77,7 @@
         "type": "address"
       },
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "uint256",
         "name": "planetId",
         "type": "uint256"
@@ -96,7 +96,7 @@
         "type": "address"
       },
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "uint256",
         "name": "purchaseId",
         "type": "uint256"
@@ -213,7 +213,7 @@
         "type": "address"
       },
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "uint256",
         "name": "purchaseId",
         "type": "uint256"
@@ -238,7 +238,7 @@
         "type": "address"
       },
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "uint256",
         "name": "purchaseId",
         "type": "uint256"
@@ -258,15 +258,27 @@
     "inputs": [
       {
         "indexed": true,
+        "internalType": "uint256",
+        "name": "purchaseId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "productId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
         "internalType": "address",
         "name": "buyer",
         "type": "address"
       },
       {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "purchaseId",
-        "type": "uint256"
+        "indexed": true,
+        "internalType": "address",
+        "name": "seller",
+        "type": "address"
       },
       {
         "indexed": false,

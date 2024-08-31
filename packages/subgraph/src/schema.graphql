@@ -1,121 +1,55 @@
 type Planet @entity {
-  id: ID!
-  planetId: BigInt!
+  id: ID! # planetId from the contract
   planetName: String!
   planetImage: String!
   planetDescription: String!
   ruler: Bytes!
   products: [Product!]! @derivedFrom(field: "planet")
-  approvals: [ApprovalRequest!]! @derivedFrom(field: "planet") # Link to ApprovalRequest
-  createdAt: BigInt!
-  updatedAt: BigInt!
+  approvalRequests: [ApprovalRequest!]! @derivedFrom(field: "planet")
 }
 
 type Product @entity {
-  id: ID!
-  name: String!
-  productImage: String!
-  productId: BigInt!
+  id: ID! # productId from the contract
   planet: Planet!
-  seller: Seller!
+  productImage: String!
+  seller: Bytes!
   quantity: BigInt!
   price: BigInt!
   sales: BigInt!
   purchases: [Purchase!]! @derivedFrom(field: "product")
-  createdAt: BigInt!
-  updatedAt: BigInt!
-}
-
-type Seller @entity {
-  id: ID!
-  address: Bytes!
-  products: [Product!]! @derivedFrom(field: "seller")
-  approvals: [ApprovalRequest!]! @derivedFrom(field: "seller")
-  appeals: [Appeal!]! @derivedFrom(field: "seller")
-  createdAt: BigInt!
-  updatedAt: BigInt!
-}
-
-type Buyer @entity {
-  id: ID!
-  address: Bytes!
-  purchases: [Purchase!]! @derivedFrom(field: "buyer")
-  appeals: [Appeal!]! @derivedFrom(field: "buyer")
-  createdAt: BigInt!
-  updatedAt: BigInt!
 }
 
 type Purchase @entity {
-  id: ID!
-  purchaseId: BigInt!
+  id: ID! # purchaseId from the contract
   product: Product!
-  buyer: Buyer!
-  seller: Seller!
+  buyer: Bytes!
+  seller: Bytes!
   amount: BigInt!
   isReleased: Boolean!
   isDelivered: Boolean!
   isRefunded: Boolean!
-  appealRaised: Boolean!
-  createdAt: BigInt!
-  updatedAt: BigInt!
-}
-
-type ApprovalRequest @entity {
-  id: ID!
-  seller: Seller!
-  planet: Planet!
-  status: String!
-  createdAt: BigInt!
-  updatedAt: BigInt!
-}
-
-type ApprovalEvent @entity {
-  id: ID!
-  eventType: String!
-  seller: Seller!
-  planet: Planet!
-  createdAt: BigInt!
-  updatedAt: BigInt!
+  timestamp: BigInt!
+  appeal: Appeal @derivedFrom(field: "purchase")
 }
 
 type Appeal @entity {
-  id: ID!
+  id: ID! # purchaseId from the contract
   purchase: Purchase!
   by: Bytes!
-  buyer: Buyer
-  seller: Seller
-  createdAt: BigInt!
-  updatedAt: BigInt!
+  timestamp: BigInt!
 }
 
-type ReleaseEvent @entity {
-  id: ID!
-  purchase: Purchase!
-  amount: BigInt!
-  createdAt: BigInt!
-  updatedAt: BigInt!
+type ApprovalRequest @entity {
+  id: ID! # approval request ID
+  seller: Bytes!
+  planet: Planet!
+  status: String!
+  timestamp: BigInt!
 }
 
-type RefundEvent @entity {
-  id: ID!
-  purchase: Purchase!
-  amount: BigInt!
-  createdAt: BigInt!
-  updatedAt: BigInt!
-}
-
-type SaleEvent @entity {
-  id: ID!
-  purchase: Purchase!
-  totalAmount: BigInt!
-  createdAt: BigInt!
-  updatedAt: BigInt!
-}
-
-type DeliveredEvent @entity {
-  id: ID!
-  purchase: Purchase!
-  totalAmount: BigInt!
-  createdAt: BigInt!
-  updatedAt: BigInt!
+type ApprovedSeller @entity {
+  id: ID! # combination of seller address and planet ID
+  seller: Bytes!
+  planet: Planet!
+  approvedAt: BigInt!
 }
