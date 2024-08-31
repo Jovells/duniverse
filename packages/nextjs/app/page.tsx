@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import type { NextPage } from "next";
+import Typewriter from "typewriter-effect";
 // import { useAccount } from "wagmi";
 import { ShoppingCartIcon, WalletIcon } from "@heroicons/react/24/outline";
 import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
@@ -16,9 +17,19 @@ const Home: NextPage = () => {
           <div className="hidden absolute right-10 justify-between mb-5">
             <button className="text-[20px] font-bold outline outline-1 p-2 rounded-lg">➕ Create Store</button>
           </div>
+          <img src="/solar.gif" alt="planet" className="w-[400px] absolute left-10 top-5" />
           <h1 className="text-center flex flex-col justify-center items-center gap-10">
-            <span className="block text-2xl mb-2">Decentralized Shopping</span>
-            <span className="block text-4xl font-bold">D-universe</span>
+            <span className="block text-2xl mb-2 font-mono text-blue-700">Decentralized Marketplace</span>
+            <span className="absolute right-10 text-2xl font-bold text-blue-700 font-mono">
+              <Typewriter
+                options={{
+                  strings: ["Decentralized Marketplace", "Fast, Efficient & Reliable", "Decentralized Escrow"],
+                  autoStart: true,
+                  loop: true,
+                }}
+              />
+            </span>
+            <span className="block text-6xl font-bold font-mono">DUniverse</span>
           </h1>
 
           <div className="flex justify-center items-center gap-12 flex-col sm:flex-row mt-10 sm:mt-20">

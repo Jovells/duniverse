@@ -18,8 +18,18 @@ const AddProduct: NextPage<AddProductProps> = ({
   setProductQuantity,
   submitProduct,
 }) => {
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ? e.target.files[0] : null;
+    try {
+      const response = await fetch('https://picsum.photos/200');
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const result = await response.json();
+      console.log(result)
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
     setProductImage(file?.name);
   };
 
@@ -48,14 +58,14 @@ const AddProduct: NextPage<AddProductProps> = ({
           <form onSubmit={handleSubmission} className="modal-box flex flex-col">
             <h3 className="text-lg font-bold">Add a product.</h3>
             <p className="py-4 flex flex-col justify-between items-center gap-2">
-              <label htmlFor="name">Upload image</label>
-              <input onChange={handleImageUpload} type="file" className="outline outline-1 p-2 rounded-lg" />
-              <label htmlFor="name">Product name</label>
-              <input onChange={handleProductName} type="text" className="outline outline-1 p-2 rounded-lg" />
-              <label htmlFor="name">Price</label>
-              <input onChange={handlePriceChange} type="number" className="outline outline-1 p-2 rounded-lg" />
-              <label htmlFor="name">Quantity</label>
-              <input onChange={handleQuantityChange} type="number" className="outline outline-1 p-2 rounded-lg" />
+              <label className="text-blue-700" htmlFor="name">Upload image</label>
+              <input onChange={handleImageUpload} type="file" className="outline outline-1 w-1/2 p-2 rounded-xl" />
+              <label className="text-blue-700" htmlFor="name">Product name</label>
+              <input onChange={handleProductName} type="text" className="outline outline-1 w-1/2 p-2 rounded-xl" />
+              <label className="text-blue-700" htmlFor="name">Price</label>
+              <input onChange={handlePriceChange} type="number" className="outline outline-1 p-2 rounded-xl" />
+              <label className="text-blue-700" htmlFor="name">Quantity</label>
+              <input onChange={handleQuantityChange} type="number" className="outline outline-1 w-1/2 p-2 rounded-xl" />
             </p>
 
             <button disabled={false} type="submit" className="btn w-[100px] bg-base-300 place-self-end">

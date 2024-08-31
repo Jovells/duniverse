@@ -14588,6 +14588,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"raf@npm:^3.4.1":
+  version: 3.4.1
+  resolution: "raf@npm:3.4.1"
+  dependencies:
+    performance-now: "npm:^2.1.0"
+  checksum: 10/4c4b4c826b09d2aec6ca809f1a3c3c12136e7ec8d13fbb91f495dd2c99cd43345240e003da3bfd16036a432e635049fc6d9f69f9187f5f22ea88bb146ec75881
+  languageName: node
+  linkType: hard
+
 "randombytes@npm:^2.1.0":
   version: 2.1.0
   resolution: "randombytes@npm:2.1.0"
@@ -15373,6 +15382,7 @@ __metadata:
     apollo-server-micro: "npm:^3.13.0"
     husky: "npm:~8.0.3"
     lint-staged: "npm:~13.2.2"
+    typewriter-effect: "npm:^2.21.0"
     web3: "npm:^4.12.1"
   languageName: unknown
   linkType: soft
@@ -17142,6 +17152,19 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 10/f5481fa3ba0eee8970f46708d13c05650a865ad093b586fc9573f425c64c57ca97e3308e110bb528deb3ccebe83f6fd7b5a8ac90018038da96326a9ccdf8e77c
+  languageName: node
+  linkType: hard
+
+"typewriter-effect@npm:^2.21.0":
+  version: 2.21.0
+  resolution: "typewriter-effect@npm:2.21.0"
+  dependencies:
+    prop-types: "npm:^15.8.1"
+    raf: "npm:^3.4.1"
+  peerDependencies:
+    react: ^17.x || ^18.x
+    react-dom: ^17.x || ^18.x
+  checksum: 10/eaefe01da5ecfc866a1031efa34ad365f4f52fc57be9acf67d4877e01361844a2798f1aba035845fc9f60edaa56bdbb6f7597341ae8e4015793795e1d7b6763d
   languageName: node
   linkType: hard
 

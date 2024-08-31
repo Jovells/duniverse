@@ -22,14 +22,14 @@ export const HeaderMenuLinks = () => {
   const { address } = useAccount();
   const menuLinks: HeaderMenuLink[] = [
     {
-      label: "Stores",
+      label: "Planets",
       href: "/stores",
     },
-    {
-      label: "Products",
-      href: "/products",
-      // icon: <BugAntIcon className="h-4 w-4" />,
-    },
+    // {
+    //   label: "Products",
+    //   href: "/products",
+    //   // icon: <BugAntIcon className="h-4 w-4" />,
+    // },
     {
       label: "Dashboard",
       href: isSeller ? `/seller-dashboard/${address}` : `buyer-dashboard/${address}`,
@@ -143,7 +143,7 @@ export const Header = () => {
         </div>
         <Link href="/" passHref className="hidden lg:flex items-center gap-2 ml-4 mr-6 shrink-0">
           <div className="flex relative w-10 h-10">
-            <Image alt="SE2 logo" className="cursor-pointer" fill src="/logo.svg" />
+            <Image width={200} height={200} alt="SE2 logo" className="w-[200px] cursor-pointer" src="/logo.jpeg" />
           </div>
           <div className="flex flex-col">
             <span className="font-bold leading-tight">D-UNIVERSE</span>

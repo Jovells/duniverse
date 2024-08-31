@@ -14,12 +14,13 @@ const StoreCard: NextPage = ({ planet }) => {
         <div className="p-5">
           <img
             src={
-              planet?.img ||
-              "https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/ABSA_Group_Limited_Logo.svg/800px-ABSA_Group_Limited_Logo.svg.png"
+              planet?.img || planet?.planetName?.includes("Pearson")
+                ? "https://assets-global.website-files.com/637d4c3b222767826da03ef4/637ff65ccfb898870679226e_Pearson-logo-p-500.png"
+                : "https://www.databankgroup.com/wp-content/uploads/2018/01/databanklogo-1.png"
             }
             alt="Landscape picture"
             className="rounded-full"
-            style={{ width: "180px" }}
+            style={{ width: "500px" }}
           />
         </div>
         <div className="w-full border border-black text-center rounded-br-3xl rounded-bl-3xl">

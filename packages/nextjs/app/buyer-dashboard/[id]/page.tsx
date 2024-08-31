@@ -3,23 +3,72 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import type { NextPage } from "next";
+import { THE_GRAPH_URL } from "~~/app/constants";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
 /* eslint-disable @next/next/no-img-element */
 const BuyerDashboard: NextPage = () => {
   const { writeContractAsync, isPending: pending } = useScaffoldWriteContract("Duniverse");
+  const [data, setData] = useState();
   const [productId, setProductId] = useState<any>(null);
   const [itemQty, setItemQty] = useState<any>(1);
   const [isPending, setIsPending] = useState<any>(pending);
+  const [isPendingRelease, setIsPendingRelease] = useState<any>(pending);
+
+  const [pendingSales, setPendingSales] = useState([]);
+  const [completedSales, setCompletedSales] = useState([]);
   const route = useParams();
 
-  const buyProduct = async () => {
-    console.log(productId, itemQty);
+  // graphql
+  async function fetchGraphQL(operationsDoc: any, operationName: any, variables: any) {
+    const response = await fetch(THE_GRAPH_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        query: operationsDoc,
+        variables,
+        operationName,
+      }),
+    });
+
+    return await response.json();
+  }
+
+  const buyerAddress = route?.id?.toLowerCase();
+
+  const operation = `
+    query MyQuery {
+      purchases(where: {buyer: "0x00a0e8ee15281e0fffb7863cc2bd89397483366d"}) {
+        id
+        isDelivered
+        isRefunded
+        isReleased
+        product {
+          id
+          name
+          price
+          productId
+          productImage
+          quantity
+          updatedAt
+        }
+      }
+    }
+  `;
+
+  function fetchMyQuery() {
+    return fetchGraphQL(operation, "MyQuery", {});
+  }
+
+  const raiseAppeal = async (purchaseId: any) => {
+    setIsPending(true);
     try {
       await writeContractAsync(
         {
-          functionName: "purchaseProduct",
-          args: [productId, itemQty],
+          functionName: "raiseAppeal",
+          args: [purchaseId],
         },
         {
           onBlockConfirmation: txnReceipt => {
@@ -28,8 +77,31 @@ const BuyerDashboard: NextPage = () => {
         },
       );
     } catch (e) {
+      console.error("Error raising appeal", e);
+    } finally {
       setIsPending(false);
-      console.error("Error posting product", e);
+    }
+  };
+
+  const releaseFund = async (purchaseId: any) => {
+    setIsPendingRelease(true);
+    try {
+      await writeContractAsync(
+        {
+          functionName: "release",
+          args: [purchaseId],
+        },
+        {
+          onBlockConfirmation: txnReceipt => {
+            console.log("📦 Transaction blockHash", txnReceipt.blockHash);
+          },
+        },
+      );
+      location.reload()
+    } catch (e) {
+      console.error("Error releasing fund", e);
+    } finally {
+      setIsPendingRelease(false);
     }
   };
 
@@ -38,6 +110,28 @@ const BuyerDashboard: NextPage = () => {
       setProductId(route.id);
     }
   }, [route.id]);
+
+  useEffect(() => {
+    console.log(route?.id);
+    fetchMyQuery()
+      .then(({ data, errors }) => {
+        if (errors) {
+          console.error(errors);
+        } else {
+          console.log(data?.purchases);
+          setData(data?.purchases);
+          const pending = data?.purchases?.filter(data => data?.isReleased !== true);
+          setPendingSales(pending);
+          const completed = data?.purchases?.filter(
+            data => data?.isReleased == true || (data?.isReleased == false && data?.isRefunded == true),
+          );
+          setCompletedSales(completed);
+        }
+      })
+      .catch(error => {
+        console.error("Error fetching query:", error);
+      });
+  }, []);
 
   return (
     <>
@@ -55,23 +149,37 @@ const BuyerDashboard: NextPage = () => {
               </tr>
             </thead>
             <tbody>
-              <tr className="border-b">
-                <td className="p-3">
-                  <span>Iphone 15 Pro Max</span>
-                </td>
-                <td className="p-3">
-                  <span>13</span>
-                </td>
-                <td className="p-3">
-                  <span className="text-yellow-600 font-semibold">Pending</span>
-                </td>
-                <td className="p-3">
-                  <div className="space-x-2">
-                    <button className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600">Appeal</button>
-                    <button className="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600">Release</button>
-                  </div>
-                </td>
-              </tr>
+              {pendingSales?.map((purchase, index) => (
+                <tr className="border-b" key={index}>
+                  <td className="p-3">
+                    <span>{purchase?.product?.name}</span>
+                  </td>
+                  <td className="p-3">
+                    <span>{purchase?.product?.quantity || "N/A"}</span>
+                  </td>
+                  <td className="p-3">
+                    <span className="text-yellow-600 font-semibold">
+                      {purchase?.isDelivered ? "Delivered" : "Pending"}
+                    </span>
+                  </td>
+                  <td className="p-3">
+                    <div className="space-x-2">
+                      <button
+                        onClick={() => raiseAppeal(purchase?.id)}
+                        className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600"
+                      >
+                        {isPending ? <span className="loading loading-spinner loading-sm"></span> : "Appeal"}
+                      </button>
+                      <button
+                        onClick={() => releaseFund(purchase?.id)}
+                        className="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600"
+                      >
+                        {isPendingRelease ? <span className="loading loading-spinner loading-sm"></span> : "Release"}
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
 
@@ -85,28 +193,19 @@ const BuyerDashboard: NextPage = () => {
               </tr>
             </thead>
             <tbody>
-              <tr className="border-b bg-gray-50">
-                <td className="p-3">
-                  <span>Iphone 15 Pro Max</span>
-                </td>
-                <td className="p-3">
-                  <span className="text-green-600 font-semibold">Completed</span>
-                </td>
-                <td className="p-3">
-                  <span>2024-08-28</span>
-                </td>
-              </tr>
-              <tr className="border-b bg-gray-50">
-                <td className="p-3">
-                  <span>Samsung Galaxy S23</span>
-                </td>
-                <td className="p-3">
-                  <span className="text-green-600 font-semibold">Completed</span>
-                </td>
-                <td className="p-3">
-                  <span>2024-08-25</span>
-                </td>
-              </tr>
+              {completedSales?.map((purchase, index) => (
+                <tr className="border-b bg-gray-50" key={index}>
+                  <td className="p-3">
+                    <span>{purchase?.product?.name}</span> ({purchase?.product?.quantity || "N/A"}) Qty
+                  </td>
+                  <td className="p-3">
+                    <span className="text-green-600 font-semibold">Completed</span>
+                  </td>
+                  <td className="p-3">
+                    <span>2024-08-28</span>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
