@@ -4,14 +4,14 @@
 import { useState } from "react";
 import Link from "next/link";
 import type { NextPage } from "next";
-import { Address, EtherInput } from "~~/components/scaffold-eth";
+import { Address } from "~~/components/scaffold-eth";
 
 const ProductCard: NextPage = ({ product }) => {
-  const [ethAmount, setEthAmount] = useState(product?.price / 10 ** 6);
+  const [ethAmount] = useState(product?.price / 10 ** 6);
   return (
     <>
       <div className="bg-white w-fit sm:w-1/5 flex items-center flex-col shadow-xl rounded-xl aspect-auto">
-        <Link href={`/product-details/${product?.id}`} className="w-full cursor-pointer">
+        <Link href={`/product-details/?id=${product?.id || "1"}`} className="w-full cursor-pointer">
           <div className="p-5">
             <img
               src={`https://ipfs.io/ipfs/${product?.productImage}`}

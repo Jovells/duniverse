@@ -1,23 +1,22 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import type { NextPage } from "next";
 import { THE_GRAPH_URL } from "~~/app/constants";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
 /* eslint-disable @next/next/no-img-element */
-const BuyerDashboard: NextPage = () => {
+const SellerDashboard: NextPage = () => {
   const { writeContractAsync, isPending: pending } = useScaffoldWriteContract("Duniverse");
   const [data, setData] = useState();
   const [productId, setProductId] = useState<any>(null);
-  const [itemQty, setItemQty] = useState<any>(1);
   const [isPending, setIsPending] = useState<any>(pending);
   const [isPendingRelease, setIsPendingRelease] = useState<any>(pending);
 
   const [pendingSales, setPendingSales] = useState([]);
   const [completedSales, setCompletedSales] = useState([]);
-  const route = useParams();
+  const searchParams = useSearchParams();
 
   // graphql
   async function fetchGraphQL(operationsDoc: any, operationName: any, variables: any) {
@@ -36,7 +35,7 @@ const BuyerDashboard: NextPage = () => {
     return await response.json();
   }
 
-  const buyerAddress = route?.id?.toLowerCase();
+  const buyerAddress = searchParams.get("id")?.toLowerCase();
 
   const operation = `
     query MyQuery {
@@ -95,7 +94,7 @@ const BuyerDashboard: NextPage = () => {
           },
         },
       );
-      location.reload()
+      location.reload();
     } catch (e) {
       console.error("Error releasing fund", e);
     } finally {
@@ -103,14 +102,14 @@ const BuyerDashboard: NextPage = () => {
     }
   };
 
-  useEffect(() => {
-    if (route?.id) {
-      setProductId(route.id);
-    }
-  }, [route.id]);
 
   useEffect(() => {
-    console.log(route?.id);
+    // check the user address
+    const currentId = searchParams.get("id");
+    if (currentId) {
+      setProductId(currentId || 1);
+    }
+
     fetchMyQuery()
       .then(({ data, errors }) => {
         if (errors) {
@@ -212,4 +211,4 @@ const BuyerDashboard: NextPage = () => {
   );
 };
 
-export default BuyerDashboard;
+export default SellerDashboard;

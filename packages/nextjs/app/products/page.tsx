@@ -2,13 +2,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import ProductCard from "../_components/ProductCard";
+import { useParams, useSearchParams } from "next/navigation";
+import ProductCard from "./_components/ProductCard";
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { THE_GRAPH_URL } from "~~/app/constants";
-import AddProduct from "../_components/AddProduct";
+import AddProduct from "./_components/AddProduct";
+
 
 
 const Products: NextPage = () => {
@@ -23,7 +24,7 @@ const Products: NextPage = () => {
   const [planetId, setPlanetId] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false)
 
-  const route = useParams();
+  const searchParams = useSearchParams() 
 
   async function fetchGraphQL(operationsDoc: any, operationName: any, variables: any) {
     setIsLoading(true)
@@ -46,7 +47,7 @@ const Products: NextPage = () => {
   
   const operation = `
   query MyQuery {
-    products(where: { planet: "${route?.id}"  }) {
+    products(where: { planet: "${searchParams.get('id')}"  }) {
       id
       name
       price
@@ -66,18 +67,18 @@ const Products: NextPage = () => {
     const payload = {
       productImage: productImage,
       productName: productName,
-      planetId: planetId ?? 1,
+      planetId: searchParams.get('id') ?? 1,
       seller: connectedAddress,
       quantity: productQuantity as any,
       price: productPrice as any,
     };
-    if(productName && planetId && productImage && connectedAddress && productQuantity && productPrice) {
+    if(productName && searchParams.get('id') && productImage && connectedAddress && productQuantity && productPrice) {
       try {
         console.log("Payload1", payload);
         await writeContractAsync(
           {
             functionName: "addProduct",
-            args: [productName, planetId, productImage, connectedAddress, productQuantity, productPrice]
+            args: [productName, searchParams.get('id') as any, productImage, connectedAddress, productQuantity, productPrice]
           },
           {
             onBlockConfirmation: txnReceipt => {
@@ -94,19 +95,15 @@ const Products: NextPage = () => {
     }
   }
 
-  const isFormComplete = () => {
-    return productName && productPrice && productQuantity && planetId
-  }
-
-  // check the planet and product id
+  
   useEffect(() => {
-    if (route?.id) {
-      setPlanetId(route.id || 1);
+    // check the planet and product id
+    const currentId = searchParams.get('id');
+    if (currentId) {
+      setPlanetId(currentId || 1);
     }
-  }, [route.id]);
-
-  // Graphql query to fetch products per planet id
-  useEffect(() => {
+    
+    // Graphql query to fetch products per planet id
     fetchMyQuery()
     .then(({ data, errors }) => {
       if (errors) {

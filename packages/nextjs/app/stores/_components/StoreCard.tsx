@@ -8,7 +8,7 @@ const StoreCard: NextPage = ({ planet }) => {
   return (
     <>
       <Link
-        href={`/products/${planet?.planetId || "1"}`}
+        href={`/products/?id=${planet?.id || "1"}`}
         className="bg-white w-fit sm:w-1/5 flex items-center flex-col shadow-xl rounded-3xl aspect-auto"
       >
         <div className="p-5">
@@ -20,10 +20,10 @@ const StoreCard: NextPage = ({ planet }) => {
             }
             alt="Landscape picture"
             className="rounded-full"
-            style={{ width: "500px" }}
+            style={{ width: "700px" }}
           />
         </div>
-        <div className="w-full border border-black text-center rounded-br-3xl rounded-bl-3xl">
+        <div className="w-full border border-black text-center rounded-br-3xl rounded-bl-3xl p-2">
           <h1 className="text-lg uppercase font-bold">{planet?.planetName}</h1>
           <p>{planet?.planetDescription}</p>
           {Array.from({ length: 5 }).map((_, index) => (

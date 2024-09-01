@@ -32,7 +32,7 @@ export const HeaderMenuLinks = () => {
     // },
     {
       label: "Dashboard",
-      href: isSeller ? `/seller-dashboard/${address}` : `buyer-dashboard/${address}`,
+      href: isSeller ? `/seller-dashboard/?id=${address}` : `buyer-dashboard/?id=${address}`,
       // icon: <BugAntIcon className="h-4 w-4" />,
     },
   ];

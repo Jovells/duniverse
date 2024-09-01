@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
 import { DUNEVERSE_SEPOLIA_ADDRESS, THE_GRAPH_URL } from "~~/app/constants";
@@ -20,8 +20,8 @@ const ProductDetails: NextPage = () => {
   const [isApprovalPending, setIsApprovalPending] = useState<any>(approvalPending);
   const [ethAmount, setEthAmount] = useState<number | null>(null);
   const { address } = useAccount();
-  const route = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   async function fetchGraphQL(operationsDoc: any, operationName: any, variables: any) {
     const response = await fetch(THE_GRAPH_URL, {
@@ -41,7 +41,7 @@ const ProductDetails: NextPage = () => {
 
   const operation = `
      query MyQuery {
-      products(where: { id: "${route?.id}" }, orderDirection: asc) {
+      products(where: { id: "${searchParams.get("id")}" }, orderDirection: asc) {
         id
         name
         price
@@ -83,7 +83,7 @@ const ProductDetails: NextPage = () => {
           },
         },
       );
-      router?.push(`/buyer-dashboard/${address}`);
+      router?.push(`/buyer-dashboard/?id=${address}`);
       setIsPending(false);
     } catch (e) {
       setIsPending(false);
@@ -91,13 +91,15 @@ const ProductDetails: NextPage = () => {
     }
   };
 
-  useEffect(() => {
-    if (route?.id) {
-      setProductId(route.id);
-    }
-  }, [route.id]);
 
   useEffect(() => {
+    // check and set the product id
+    const currentId = searchParams.get('id');
+    if (currentId) {
+      setProductId(currentId || 1);
+    }
+
+    // Graphql query to fetch products details by id
     fetchMyQuery()
       .then(({ data, errors }) => {
         if (errors) {

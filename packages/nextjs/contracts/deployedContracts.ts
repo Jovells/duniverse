@@ -4944,7 +4944,7 @@ const deployedContracts = {
       inheritedFunctions: {},
     },
     MockUSDT: {
-      address: "0xff68f7561562C1F24A317d939B46741F76c4Ef55",
+      address: "0x0DaeDC95e655667E9ff86998C0E0651FC3530067",
       abi: [
         {
           inputs: [],
