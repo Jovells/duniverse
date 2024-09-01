@@ -2,6 +2,7 @@
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+output: "out",
   reactStrictMode: true,
   typescript: {
     ignoreBuildErrors: true,
